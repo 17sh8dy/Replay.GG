@@ -1,0 +1,238 @@
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 12px 12px;
+  background: var(--bg-base);
+  border-right: 1px solid var(--border);
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: var(--r-lg);
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-out);
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.nav-item:active {
+  transform: scale(0.98);
+}
+
+.nav-item--active {
+  background: var(--bg-surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* A rounded tile behind each glyph gives the nav weight and a clear hit target,
+   and lets the active/hover states light up the icon without moving the label. */
+.nav-item__glyph {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-md);
+  color: inherit;
+  flex-shrink: 0;
+  transition: background var(--t-fast) var(--ease-out), color var(--t-med) var(--ease-out),
+    transform var(--t-med) var(--ease-out);
+}
+
+.nav-item:hover .nav-item__glyph {
+  background: var(--bg-active);
+}
+
+.nav-item--active .nav-item__glyph {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.nav-item--active:hover .nav-item__glyph {
+  background: var(--accent-soft);
+}
+
+/* The accent bar is the only green on an inactive sidebar — it marks exactly
+   one thing, which is what keeps the palette from feeling "RGB gamer". */
+.nav-item__indicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  border-radius: 0 var(--r-full) var(--r-full) 0;
+  background: var(--accent);
+  transform: translateY(-50%);
+  transition: height var(--t-med) var(--ease-out);
+}
+
+.nav-item--active .nav-item__indicator {
+  height: 22px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.nav-item__label {
+  flex: 1;
+  text-align: left;
+}
+
+.sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- Instant Replay toggle ---------------------------------------------- */
+.replay-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  text-align: left;
+  transition: border-color var(--t-med) var(--ease-out), background var(--t-med) var(--ease-out);
+}
+
+.replay-toggle:hover {
+  border-color: var(--border-strong);
+}
+
+.replay-toggle--on {
+  background: var(--accent-soft);
+  border-color: rgba(68, 214, 44, 0.3);
+}
+
+.replay-toggle__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.replay-toggle--on .replay-toggle__head {
+  color: var(--text);
+}
+
+.replay-toggle--on .replay-toggle__head svg {
+  color: var(--accent);
+}
+
+.replay-toggle__head span:first-of-type {
+  flex: 1;
+}
+
+.replay-toggle__hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  padding-left: 23px;
+}
+
+.replay-toggle--on .replay-toggle__hint {
+  color: var(--accent);
+}
+
+/* --- Switch -------------------------------------------------------------- */
+.switch {
+  width: 30px;
+  height: 17px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.12);
+  padding: 2px;
+  display: flex;
+  transition: background var(--t-med) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.switch--on {
+  background: var(--accent);
+}
+
+.switch__knob {
+  width: 13px;
+  height: 13px;
+  border-radius: var(--r-full);
+  background: #fff;
+  transition: transform var(--t-med) var(--ease-out);
+}
+
+.switch--on .switch__knob {
+  transform: translateX(13px);
+}
+
+/* --- Storage meter ------------------------------------------------------- */
+.storage {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px 12px;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.storage__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.storage__label {
+  flex: 1;
+}
+
+.storage__value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.storage__bar {
+  height: 4px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+/* Neutral by default — a permanently green wall would spend the accent on
+   information that is rarely actionable. */
+.storage__fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.28);
+  transition: width var(--t-slow) var(--ease-out), background var(--t-med) var(--ease-out);
+}
+
+.storage__fill--low {
+  background: var(--warning);
+}
+
+.storage__free {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}

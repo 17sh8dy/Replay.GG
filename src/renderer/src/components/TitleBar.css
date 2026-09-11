@@ -1,0 +1,111 @@
+.titlebar {
+  height: var(--titlebar-h);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-left: 14px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  /* Everything drags unless a child opts out. */
+  -webkit-app-region: drag;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+
+.titlebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.titlebar__mark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: #06210b;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.titlebar__name {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.titlebar__tld {
+  color: var(--accent);
+}
+
+.titlebar__status {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  padding: 0 11px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  animation: scale-in var(--t-med) var(--ease-out);
+}
+
+.status-pill--recording {
+  background: var(--danger-soft);
+  color: var(--recording);
+  border: 1px solid rgba(255, 59, 59, 0.25);
+}
+
+.status-pill--replay {
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+  border: 1px solid rgba(68, 214, 44, 0.25);
+}
+
+.status-pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-full);
+  background: var(--recording);
+  animation: pulse-record 1.8s var(--ease-in-out) infinite;
+}
+
+.status-pill__time {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.titlebar__controls {
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar__btn {
+  width: 46px;
+  height: var(--titlebar-h);
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.titlebar__btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.titlebar__btn--close:hover {
+  background: #e01b1b;
+  color: #fff;
+}

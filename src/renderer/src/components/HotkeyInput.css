@@ -1,0 +1,66 @@
+.hotkey {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hotkey__field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 168px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  transition: border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+}
+
+.hotkey__field:hover {
+  border-color: var(--border-strong);
+}
+
+.hotkey__field--capturing {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.hotkey__key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.hotkey__prompt {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.hotkey__field--capturing .hotkey__prompt {
+  color: var(--accent);
+}
+
+.hotkey__clear {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-sm);
+  color: var(--text-tertiary);
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.hotkey__clear:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}

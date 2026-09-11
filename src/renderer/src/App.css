@@ -1,0 +1,35 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-base);
+}
+
+.app__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.app__main {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-base);
+  animation: fade-in var(--t-med) var(--ease-out);
+}
+
+/* --- Boot state ----------------------------------------------------------- */
+.boot {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+.boot__mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  animation: spin 700ms linear infinite;
+}

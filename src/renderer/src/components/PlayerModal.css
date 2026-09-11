@@ -1,0 +1,254 @@
+.player-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(6, 7, 8, 0.86);
+  backdrop-filter: blur(14px);
+  animation: fade-in var(--t-fast) var(--ease-out);
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  width: min(1180px, 100%);
+  max-height: 100%;
+  border-radius: var(--r-xl);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: scale-in var(--t-med) var(--ease-out);
+}
+
+.player__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 18px 14px;
+}
+
+.player__titles h2 {
+  margin-bottom: 2px;
+}
+
+.player__titles .muted {
+  font-size: 12.5px;
+}
+
+.player__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.player__close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.player__stage {
+  background: #000;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.player__stage video {
+  width: 100%;
+  max-height: 62vh;
+  display: block;
+  cursor: pointer;
+}
+
+.player__controls {
+  padding: 12px 18px 16px;
+}
+
+/* --- Scrubber ------------------------------------------------------------- */
+.scrubber {
+  padding: 7px 0;
+  cursor: pointer;
+}
+
+.scrubber__track {
+  position: relative;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.12);
+  transition: height var(--t-fast) var(--ease-out);
+}
+
+.scrubber:hover .scrubber__track {
+  height: 6px;
+}
+
+.scrubber__played {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: var(--r-full);
+  background: var(--accent);
+}
+
+/* The trim window sits above the played bar so the selection stays legible
+   wherever the playhead is. */
+.scrubber__selection {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  pointer-events: none;
+}
+
+.scrubber__head {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: var(--r-full);
+  background: #fff;
+  transform: translateY(-50%);
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.scrubber:hover .scrubber__head {
+  opacity: 1;
+}
+
+/* --- Control bar ---------------------------------------------------------- */
+.player__bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.player__play {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-full);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+
+.player__play:hover {
+  background: var(--bg-active);
+}
+
+.player__play:active {
+  transform: scale(0.93);
+}
+
+.player__time {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.player__spacer {
+  flex: 1;
+}
+
+.player__stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* --- Trimmer -------------------------------------------------------------- */
+.trimmer {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: var(--r-lg);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  animation: rise-in var(--t-med) var(--ease-out);
+}
+
+.trimmer__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.trimmer__row label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trimmer__label {
+  width: 34px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.trimmer__row input[type='range'] {
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+  cursor: pointer;
+}
+
+.trimmer__row input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+}
+
+.trimmer__row input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.trimmer__value {
+  min-width: 52px;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.trimmer__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+}
+
+.trimmer__length {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.trimmer__actions {
+  display: flex;
+  gap: 9px;
+}
