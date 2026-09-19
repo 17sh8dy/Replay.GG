@@ -11,7 +11,8 @@ import type {
   ReplayBufferStatus,
   Settings,
   StorageUsage,
-  SystemCapabilities
+  SystemCapabilities,
+  VideoDevice
 } from '@shared/types'
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] }
@@ -62,6 +63,7 @@ const api = {
     capabilities: (): Promise<SystemCapabilities> => ipcRenderer.invoke(IPC.systemCapabilities),
     storage: (): Promise<StorageUsage> => ipcRenderer.invoke(IPC.systemStorage),
     audioDevices: (): Promise<AudioDevice[]> => ipcRenderer.invoke(IPC.systemAudioDevices),
+    videoDevices: (): Promise<VideoDevice[]> => ipcRenderer.invoke(IPC.systemVideoDevices),
     /** Best-effort name of the game currently in the foreground, or null. */
     activeGame: (): Promise<string | null> => ipcRenderer.invoke(IPC.systemActiveGame)
   },

@@ -105,6 +105,38 @@ function scaleFilter(settings: Settings): string | null {
   return `scale=-2:${height}`
 }
 
+/** Is a webcam actually addable — enabled, a device chosen, and dshow available. */
+function webcamActive(settings: Settings): boolean {
+  return process.platform === 'win32' && settings.webcam.enabled && Boolean(settings.webcam.deviceId)
+}
+
+/** DirectShow video input for the webcam, or []. Always index 1 when present. */
+function webcamInput(settings: Settings): string[] {
+  if (!webcamActive(settings)) return []
+  return ['-f', 'dshow', '-i', `video=${settings.webcam.deviceId}`]
+}
+
+/**
+ * Where the webcam lands relative to the (already-scaled) desktop frame.
+ * `W`/`H`/`w`/`h` are ffmpeg's own overlay-filter variables — the main
+ * frame's and the overlay's width/height — so this holds regardless of
+ * output resolution. 16px keeps it clear of a rounded window corner.
+ */
+function overlayPosition(position: Settings['webcam']['position']): string {
+  const margin = 16
+  switch (position) {
+    case 'top-left':
+      return `${margin}:${margin}`
+    case 'top-right':
+      return `W-w-${margin}:${margin}`
+    case 'bottom-left':
+      return `${margin}:H-h-${margin}`
+    case 'bottom-right':
+    default:
+      return `W-w-${margin}:H-h-${margin}`
+  }
+}
+
 function encoderQualityArgs(ffEncoder: string, mbps: number): string[] {
   const bitrate = `${mbps}M`
   const maxrate = `${Math.round(mbps * 1.5)}M`
@@ -153,28 +185,62 @@ export async function buildCaptureArgs(
   const ffEncoder = await pickEncoder(settings.capture.encoder)
   const mbps = bitrateFor(settings.capture)
   const nAudio = audioInputCount(settings)
+  const webcamOn = webcamActive(settings)
+  // The webcam claims input index 1 (right after the desktop capture), so
+  // every audio input shifts up by one once it's present.
+  const audioBase = webcamOn ? 2 : 1
+  const mixAudio = nAudio > 1 && !settings.audio.separateTracks
 
   const args = [
     '-hide_banner',
     '-loglevel', 'warning',
     '-y',
     ...videoInput(settings),
+    ...webcamInput(settings),
     ...audioInputs(settings)
   ]
 
   const scale = scaleFilter(settings)
-  if (scale) args.push('-vf', scale)
 
-  // Mix multiple audio sources down to one track unless the user asked to keep
-  // them separate (useful for editing mic out of a clip later).
-  if (nAudio > 1 && !settings.audio.separateTracks) {
-    args.push('-filter_complex', `[1:a][2:a]amix=inputs=2:duration=longest[aout]`)
-    args.push('-map', '0:v', '-map', '[aout]')
-  } else if (nAudio > 0) {
-    args.push('-map', '0:v')
-    for (let i = 1; i <= nAudio; i++) args.push('-map', `${i}:a`)
+  if (webcamOn) {
+    // Everything — the video scale/overlay *and* the audio mix, if any — has
+    // to go through this one graph: ffmpeg accepts only one `-filter_complex`,
+    // and once the video output is a labelled node from one, `-vf` no longer
+    // has an implicit `0:v` to apply to.
+    //
+    // `scale2ref` sizes the webcam (input 1) as a fraction of the *desktop*
+    // frame's width — `main_w` below refers to its second input, so this
+    // holds regardless of capture resolution — while passing that frame
+    // through unchanged as its second output. `null` gives the unscaled
+    // desktop frame the same label when no resolution preset applies.
+    const frac = Math.min(0.6, Math.max(0.05, settings.webcam.size / 100))
+    const graph = [
+      scale ? `[0:v]${scale}[main0]` : '[0:v]null[main0]',
+      `[1:v][main0]scale2ref=w=main_w*${frac}:h=-1[wc][main]`,
+      `[main][wc]overlay=${overlayPosition(settings.webcam.position)}[vout]`
+    ]
+    if (mixAudio) {
+      const labels = Array.from({ length: nAudio }, (_, i) => `[${audioBase + i}:a]`).join('')
+      graph.push(`${labels}amix=inputs=${nAudio}:duration=longest[aout]`)
+    }
+    args.push('-filter_complex', graph.join(';'))
+    args.push('-map', '[vout]')
+    if (mixAudio) args.push('-map', '[aout]')
+    else for (let i = 0; i < nAudio; i++) args.push('-map', `${audioBase + i}:a`)
   } else {
-    args.push('-map', '0:v')
+    if (scale) args.push('-vf', scale)
+
+    // Mix multiple audio sources down to one track unless the user asked to
+    // keep them separate (useful for editing mic out of a clip later).
+    if (mixAudio) {
+      args.push('-filter_complex', `[1:a][2:a]amix=inputs=2:duration=longest[aout]`)
+      args.push('-map', '0:v', '-map', '[aout]')
+    } else if (nAudio > 0) {
+      args.push('-map', '0:v')
+      for (let i = 1; i <= nAudio; i++) args.push('-map', `${i}:a`)
+    } else {
+      args.push('-map', '0:v')
+    }
   }
 
   args.push('-c:v', ffEncoder, ...encoderQualityArgs(ffEncoder, mbps))

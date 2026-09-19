@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
 import { app } from 'electron'
-import type { AudioDevice, EncoderInfo, Encoder } from '@shared/types'
+import type { AudioDevice, EncoderInfo, Encoder, VideoDevice } from '@shared/types'
 
 const exec = promisify(execFile)
 
@@ -186,31 +186,46 @@ export async function pickEncoder(preferred: Encoder): Promise<string> {
   return best ? ffNameFor(best.id as Exclude<Encoder, 'auto'>) : 'libx264'
 }
 
-/** Enumerates DirectShow audio inputs. Windows-only; returns [] elsewhere. */
-export async function listAudioDevices(): Promise<AudioDevice[]> {
-  if (process.platform !== 'win32') return []
+/**
+ * One dshow device list carries both audio and video entries in the same
+ * stderr dump — asking twice would just run the identical probe twice.
+ */
+async function probeDshowDevices(): Promise<string> {
+  if (process.platform !== 'win32') return ''
   const bin = await ffmpegPath()
-  if (!bin) return []
+  if (!bin) return ''
 
   // ffmpeg writes the device list to stderr and exits non-zero by design.
-  let stderr = ''
   try {
     await exec(bin, ['-hide_banner', '-list_devices', 'true', '-f', 'dshow', '-i', 'dummy'], {
       windowsHide: true
     })
+    return ''
   } catch (err) {
-    stderr = (err as { stderr?: string }).stderr ?? ''
+    return (err as { stderr?: string }).stderr ?? ''
   }
+}
 
-  const devices: AudioDevice[] = []
+function parseDshowDevices(stderr: string, kind: 'audio' | 'video'): { id: string; label: string }[] {
+  const devices: { id: string; label: string }[] = []
   // Lines look like:  [dshow @ ...] "Microphone (Realtek)" (audio)
-  const re = /"([^"]+)"\s*\(audio\)/g
+  const re = new RegExp(`"([^"]+)"\\s*\\(${kind}\\)`, 'g')
   let match: RegExpExecArray | null
   while ((match = re.exec(stderr)) !== null) {
     const label = match[1]
     if (!devices.some((d) => d.id === label)) devices.push({ id: label, label })
   }
   return devices
+}
+
+/** Enumerates DirectShow audio inputs. Windows-only; returns [] elsewhere. */
+export async function listAudioDevices(): Promise<AudioDevice[]> {
+  return parseDshowDevices(await probeDshowDevices(), 'audio')
+}
+
+/** Enumerates DirectShow video inputs (webcams). Windows-only; returns [] elsewhere. */
+export async function listVideoDevices(): Promise<VideoDevice[]> {
+  return parseDshowDevices(await probeDshowDevices(), 'video')
 }
 
 export interface ProbeResult {

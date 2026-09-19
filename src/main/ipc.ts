@@ -12,7 +12,7 @@ import {
   saveReplay
 } from './services/replayBuffer'
 import { getCapabilities, getStorageUsage } from './services/storage'
-import { listAudioDevices } from './services/ffmpeg'
+import { listAudioDevices, listVideoDevices } from './services/ffmpeg'
 import { registerHotkeys } from './services/hotkeys'
 import { detectActiveGame } from './services/games'
 import {
@@ -89,6 +89,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.systemCapabilities, () => getCapabilities())
   ipcMain.handle(IPC.systemStorage, () => getStorageUsage())
   ipcMain.handle(IPC.systemAudioDevices, () => listAudioDevices())
+  ipcMain.handle(IPC.systemVideoDevices, () => listVideoDevices())
   ipcMain.handle(IPC.systemActiveGame, () => detectActiveGame())
 
   // --- Window chrome -------------------------------------------------------

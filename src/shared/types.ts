@@ -63,6 +63,11 @@ export interface AudioDevice {
   label: string
 }
 
+export interface VideoDevice {
+  id: string
+  label: string
+}
+
 export interface Hotkey {
   /** Electron accelerator string, e.g. "Ctrl+Alt+R". Empty string = unbound. */
   accelerator: string
@@ -90,7 +95,7 @@ export interface Settings {
     /** Keep mic and system audio on separate tracks for later editing. */
     separateTracks: boolean
   }
-  /** Reserved for a future release — surfaced in UI as "coming soon". */
+  /** Composited onto the capture via `scale2ref` + `overlay` — see `captureArgs.ts`. */
   webcam: {
     enabled: boolean
     deviceId: string | null

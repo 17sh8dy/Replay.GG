@@ -95,6 +95,16 @@ frames with each candidate and caches the result.
 grabs the union of every monitor, so a dual-1080p setup would silently produce
 3840x1080 files.
 
+**Webcam overlay** adds the camera as a second dshow input (index 1, right
+after the desktop capture) and composites it with `scale2ref` + `overlay` in
+one `-filter_complex` graph — `scale2ref` sizes the camera as a fraction of
+the *desktop* frame's width regardless of output resolution, and `overlay`'s
+own `W`/`H`/`w`/`h` variables place it in a corner without either filter
+needing to know the actual pixel dimensions. Enabling it switches the whole
+pipeline off `-vf` and onto `-filter_complex` for both video and any audio
+mix — ffmpeg allows only one — so audio input indices shift up by one to make
+room for the camera at index 1.
+
 ---
 
 ## Known gaps
@@ -105,7 +115,6 @@ grabs the union of every monitor, so a dual-1080p setup would silently produce
 - **Game detection** identifies the foreground process via a short PowerShell
   call and maps it through a small known-titles table. It is a thin seam:
   replacing `detectActiveGame()` swaps the whole strategy.
-- **Webcam** is settings-only and marked "coming soon".
 - **Tray icon** is an empty image pending branding art.
 
 ## Designed-for, not yet built

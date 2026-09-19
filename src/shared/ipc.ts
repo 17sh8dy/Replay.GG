@@ -37,6 +37,7 @@ export const IPC = {
   systemCapabilities: 'system:capabilities',
   systemStorage: 'system:storage',
   systemAudioDevices: 'system:audio-devices',
+  systemVideoDevices: 'system:video-devices',
   systemActiveGame: 'system:active-game',
 
   // Nova Account (optional; see main/services/account.ts)

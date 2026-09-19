@@ -4,7 +4,9 @@ import type {
   AudioDevice,
   Encoder,
   QualityPreset,
-  ResolutionPreset
+  ResolutionPreset,
+  Settings as ReplaySettings,
+  VideoDevice
 } from '@shared/types'
 import { Icon } from '../components/Icon'
 import { Button, Confirm, Select, Slider, Toggle } from '../components/ui'
@@ -32,11 +34,13 @@ export function Settings(): JSX.Element {
 
   const [section, setSection] = useState<Section>('capture')
   const [devices, setDevices] = useState<AudioDevice[]>([])
+  const [videoDevices, setVideoDevices] = useState<VideoDevice[]>([])
   const [confirmReset, setConfirmReset] = useState(false)
   const [account, setAccount] = useState<AccountState | null>(null)
 
   useEffect(() => {
     void window.replay.system.audioDevices().then(setDevices)
+    void window.replay.system.videoDevices().then(setVideoDevices)
   }, [])
 
   /**
@@ -67,6 +71,16 @@ export function Settings(): JSX.Element {
   const deviceOptions = [
     { value: '', label: devices.length ? 'Select a device…' : 'No devices found' },
     ...devices.map((d) => ({ value: d.id, label: d.label }))
+  ]
+  const videoDeviceOptions = [
+    { value: '', label: videoDevices.length ? 'Select a camera…' : 'No cameras found' },
+    ...videoDevices.map((d) => ({ value: d.id, label: d.label }))
+  ]
+  const webcamPositionOptions: { value: ReplaySettings['webcam']['position']; label: string }[] = [
+    { value: 'top-left', label: 'Top left' },
+    { value: 'top-right', label: 'Top right' },
+    { value: 'bottom-left', label: 'Bottom left' },
+    { value: 'bottom-right', label: 'Bottom right' }
   ]
 
   const pickFolder = async (key: 'recordingsPath' | 'clipsPath'): Promise<void> => {
@@ -255,10 +269,35 @@ export function Settings(): JSX.Element {
               </Group>
 
               <Group title="Webcam">
-                <div className="soon">
-                  <Icon name="clock" size={16} />
-                  <span>Webcam overlay is coming in a future update.</span>
-                </div>
+                <Row label="Show webcam overlay">
+                  <Toggle
+                    checked={settings.webcam.enabled}
+                    onChange={(enabled) => void updateSettings({ webcam: { enabled } })}
+                  />
+                </Row>
+                <Row label="Camera">
+                  <Select
+                    value={settings.webcam.deviceId ?? ''}
+                    onChange={(deviceId) => void updateSettings({ webcam: { deviceId: deviceId || null } })}
+                    options={videoDeviceOptions}
+                  />
+                </Row>
+                <Row label="Position">
+                  <Select
+                    value={settings.webcam.position}
+                    onChange={(position) => void updateSettings({ webcam: { position } })}
+                    options={webcamPositionOptions}
+                  />
+                </Row>
+                <Row label="Size" hint="How wide the overlay is, as a share of the recorded frame.">
+                  <Slider
+                    value={settings.webcam.size}
+                    min={10}
+                    max={45}
+                    onChange={(size) => void updateSettings({ webcam: { size } })}
+                    format={(v) => `${v}%`}
+                  />
+                </Row>
               </Group>
             </>
           )}
