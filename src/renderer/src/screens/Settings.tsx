@@ -462,6 +462,22 @@ export function Settings(): JSX.Element {
                     }
                   />
                 </Row>
+                <Row
+                  label="Launch on startup"
+                  hint={
+                    capabilities && !capabilities.startupSupported
+                      ? 'Available in the installed app — not in a development run.'
+                      : 'Starts Replay.gg quietly in the tray when you sign in to Windows, so hotkeys and Instant Replay are ready. Takes effect at your next sign-in — no restart needed.'
+                  }
+                >
+                  <Toggle
+                    checked={settings.general.launchOnStartup}
+                    disabled={capabilities ? !capabilities.startupSupported : true}
+                    onChange={(launchOnStartup) =>
+                      void updateSettings({ general: { launchOnStartup } })
+                    }
+                  />
+                </Row>
                 <Row label="Show notifications">
                   <Toggle
                     checked={settings.general.showNotifications}

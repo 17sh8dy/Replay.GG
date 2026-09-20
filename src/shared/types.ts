@@ -167,6 +167,8 @@ export interface SystemCapabilities {
   ffmpegPath: string | null
   encoders: EncoderInfo[]
   displays: DisplayInfo[]
+  /** False in dev/unpackaged runs, where registering a startup entry would be wrong. */
+  startupSupported: boolean
 }
 
 /** Request to cut a clip out of an existing recording. */

@@ -4,6 +4,7 @@ import type { ClipRequest, LibraryQuery, Settings } from '@shared/types'
 import type { DeepPartial } from './store'
 import * as library from './services/library'
 import { getSettings, resetSettings, updateSettings } from './services/settings'
+import { applyLaunchOnStartup } from './services/startup'
 import { getRecordingStatus, startRecording, stopRecording } from './services/recorder'
 import {
   disableReplayBuffer,
@@ -75,10 +76,18 @@ export function registerIpcHandlers(): void {
     const next = updateSettings(patch)
     // Hotkey edits only take effect once re-registered.
     if (patch.hotkeys) registerHotkeys()
+    // Registering with Windows can be refused; keep the setting honest about what happened.
+    if (patch.general?.launchOnStartup !== undefined) {
+      const actual = applyLaunchOnStartup(next.general.launchOnStartup)
+      if (actual !== next.general.launchOnStartup) {
+        return updateSettings({ general: { launchOnStartup: actual } })
+      }
+    }
     return next
   })
   ipcMain.handle(IPC.settingsReset, () => {
     const next = resetSettings()
+    applyLaunchOnStartup(next.general.launchOnStartup)
     registerHotkeys()
     return next
   })

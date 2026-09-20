@@ -207,14 +207,17 @@ export function Select<T extends string>({ value, onChange, options }: SelectPro
 // --- Toggle ----------------------------------------------------------------
 export function Toggle({
   checked,
-  onChange
+  onChange,
+  disabled
 }: {
   checked: boolean
   onChange: (v: boolean) => void
+  disabled?: boolean
 }): JSX.Element {
   return (
     <button
       className={`switch switch--lg${checked ? ' switch--on' : ''}`}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
       role="switch"
       aria-checked={checked}

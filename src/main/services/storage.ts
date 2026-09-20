@@ -1,3 +1,4 @@
+import { startupSupported } from './startup'
 import { statfs } from 'node:fs/promises'
 import { screen } from 'electron'
 import type { DisplayInfo, StorageUsage, SystemCapabilities } from '@shared/types'
@@ -47,6 +48,7 @@ export async function getCapabilities(): Promise<SystemCapabilities> {
     ffmpegAvailable: path !== null,
     ffmpegPath: path,
     encoders: await probeEncoders(),
-    displays: getDisplays()
+    displays: getDisplays(),
+    startupSupported: startupSupported()
   }
 }

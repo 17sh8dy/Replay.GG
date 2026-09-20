@@ -7,6 +7,7 @@ import { registerHotkeys, unregisterHotkeys } from './services/hotkeys'
 import { rescan } from './services/library'
 import { shutdownRecorder, toggleRecording } from './services/recorder'
 import { enableReplayBuffer, saveReplay, shutdownReplayBuffer } from './services/replayBuffer'
+import { launchedAtLogin, syncLaunchOnStartup } from './services/startup'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -46,7 +47,13 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => mainWindow?.show())
+  mainWindow.on('ready-to-show', () => {
+    // Started by Windows at sign-in: stay in the tray (hotkeys and Instant Replay still run)
+    // instead of throwing a window over whatever the person is doing. Only when a tray icon
+    // exists to get back in, and never for a normal launch.
+    if (launchedAtLogin() && tray && getSettings().general.minimizeToTray) return
+    mainWindow?.show()
+  })
 
   mainWindow.on('close', (event) => {
     // Closing to tray keeps hotkeys alive, which is the whole point of a
@@ -84,10 +91,32 @@ function showWindow(): void {
   mainWindow.focus()
 }
 
+/**
+ * A 16x16 brand-red record dot, drawn in code so there is a visible tray icon without an
+ * asset file. (It used to be an empty image — invisible — which matters now that the app can
+ * start hidden at login: the tray icon is the way back in.)
+ */
+function trayIcon(): Electron.NativeImage {
+  const size = 16
+  const buf = Buffer.alloc(size * size * 4)
+  const c = (size - 1) / 2
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const d = Math.hypot(x - c, y - c)
+      const i = (y * size + x) * 4
+      const [r, g, b, a] =
+        d <= 2.6 ? [255, 255, 255, 255] : d <= 7 ? [230, 41, 63, 255] : d <= 7.8 ? [230, 41, 63, 120] : [0, 0, 0, 0]
+      buf[i] = b
+      buf[i + 1] = g
+      buf[i + 2] = r
+      buf[i + 3] = a
+    }
+  }
+  return nativeImage.createFromBitmap(buf, { width: size, height: size })
+}
+
 function createTray(): void {
-  // A 1x1 transparent image keeps the tray functional without shipping an
-  // icon asset yet; replace with branding art before release.
-  const icon = nativeImage.createEmpty()
+  const icon = trayIcon()
   try {
     tray = new Tray(icon)
   } catch {
@@ -133,8 +162,9 @@ if (!gotLock) {
     registerIpcHandlers()
     ensureStorageDirs()
     registerHotkeys()
-    createWindow()
+    syncLaunchOnStartup()
     createTray()
+    createWindow()
 
     // Index whatever is already on disk, then start the buffer if the user
     // left it enabled last session.
