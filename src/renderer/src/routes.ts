@@ -3,12 +3,13 @@
  * string union beats pulling in a router. Adding a screen means adding a
  * member here plus a case in `App`.
  */
-export type Route = 'home' | 'recordings' | 'clips' | 'library' | 'settings'
+export type Route = 'home' | 'recordings' | 'clips' | 'library' | 'settings' | 'upgrade'
 
 export const ROUTE_TITLES: Record<Route, string> = {
   home: 'Home',
   recordings: 'Recordings',
   clips: 'Clips',
   library: 'Library',
-  settings: 'Settings'
+  settings: 'Settings',
+  upgrade: 'Upgrade'
 }

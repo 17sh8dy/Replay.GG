@@ -7,6 +7,7 @@ import { Recordings } from './screens/Recordings'
 import { Clips } from './screens/Clips'
 import { Library } from './screens/Library'
 import { Settings } from './screens/Settings'
+import { Upgrade } from './screens/Upgrade'
 import { useApp } from './state/AppContext'
 import type { Route } from './routes'
 import './App.css'
@@ -15,12 +16,12 @@ export default function App(): JSX.Element {
   const { ready } = useApp()
   const [route, setRoute] = useState<Route>('home')
 
-  // Ctrl+1..5 jumps between screens, which is what people expect from a
+  // Ctrl+1..6 jumps between screens, which is what people expect from a
   // keyboard-driven desktop app.
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       if (!e.ctrlKey || e.target instanceof HTMLInputElement) return
-      const routes: Route[] = ['home', 'recordings', 'clips', 'library', 'settings']
+      const routes: Route[] = ['home', 'recordings', 'clips', 'library', 'settings', 'upgrade']
       const index = Number(e.key) - 1
       if (index >= 0 && index < routes.length) {
         e.preventDefault()
@@ -54,6 +55,7 @@ export default function App(): JSX.Element {
           {route === 'clips' && <Clips />}
           {route === 'library' && <Library />}
           {route === 'settings' && <Settings />}
+          {route === 'upgrade' && <Upgrade />}
         </main>
       </div>
       <Toaster />

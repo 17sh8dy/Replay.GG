@@ -14,7 +14,8 @@ const NAV: NavItem[] = [
   { route: 'home', label: 'Home', icon: 'home' },
   { route: 'recordings', label: 'Recordings', icon: 'video' },
   { route: 'clips', label: 'Clips', icon: 'scissors' },
-  { route: 'library', label: 'Library', icon: 'library' }
+  { route: 'library', label: 'Library', icon: 'library' },
+  { route: 'upgrade', label: 'Upgrade', icon: 'upgrade' }
 ]
 
 interface SidebarProps {
