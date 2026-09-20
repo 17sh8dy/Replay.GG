@@ -38,10 +38,13 @@ export function Settings(): JSX.Element {
   const [confirmReset, setConfirmReset] = useState(false)
   const [account, setAccount] = useState<AccountState | null>(null)
 
+  /* Re-read Windows' device list whenever the Audio tab opens, so a mic or camera plugged in
+     after launch appears without restarting the app. */
   useEffect(() => {
+    if (section !== 'audio' && section !== 'capture') return
     void window.replay.system.audioDevices().then(setDevices)
     void window.replay.system.videoDevices().then(setVideoDevices)
-  }, [])
+  }, [section])
 
   /**
    * The account state, asked for ONLY while its tab is open.
@@ -186,9 +189,7 @@ export function Settings(): JSX.Element {
                   onChange={(v) => void updateSettings({ capture: { fps: Number(v) } })}
                   options={[
                     { value: '30', label: '30 FPS' },
-                    { value: '60', label: '60 FPS' },
-                    { value: '120', label: '120 FPS' },
-                    { value: '144', label: '144 FPS' }
+                    { value: '60', label: '60 FPS (maximum)' }
                   ]}
                 />
               </Row>
@@ -241,9 +242,19 @@ export function Settings(): JSX.Element {
                 <Row label="Capture microphone">
                   <Toggle
                     checked={settings.audio.microphoneEnabled}
-                    onChange={(microphoneEnabled) =>
-                      void updateSettings({ audio: { microphoneEnabled } })
-                    }
+                    onChange={(microphoneEnabled) => {
+                      // Turning it on with no device chosen would record silence, so pick one.
+                      const pick =
+                        devices.find((d) => /mic/i.test(d.label)) ?? devices[0]
+                      void updateSettings({
+                        audio: {
+                          microphoneEnabled,
+                          ...(microphoneEnabled && !settings.audio.microphoneDeviceId && pick
+                            ? { microphoneDeviceId: pick.id }
+                            : {})
+                        }
+                      })
+                    }}
                   />
                 </Row>
                 <Row label="Device">
@@ -272,7 +283,16 @@ export function Settings(): JSX.Element {
                 <Row label="Show webcam overlay">
                   <Toggle
                     checked={settings.webcam.enabled}
-                    onChange={(enabled) => void updateSettings({ webcam: { enabled } })}
+                    onChange={(enabled) =>
+                      void updateSettings({
+                        webcam: {
+                          enabled,
+                          ...(enabled && !settings.webcam.deviceId && videoDevices[0]
+                            ? { deviceId: videoDevices[0].id }
+                            : {})
+                        }
+                      })
+                    }
                   />
                 </Row>
                 <Row label="Camera">
@@ -566,8 +586,16 @@ function AccountSection({
         {state?.pending ? (
           <>
             <Row
-              label="Enter this code"
-              hint={`In your browser, sign in to Nova and enter the code at ${state.pending.verificationUri}. It expires in ten minutes.`}
+              label="Approve in your browser"
+              hint="Your browser opened with this app's request. Sign in to Nova and choose Connect — no typing needed. It expires in ten minutes."
+            >
+              <Button onClick={() => void window.replay.account.reopenSignIn()}>
+                <Icon name="external" size={15} /> Open browser again
+              </Button>
+            </Row>
+            <Row
+              label="Or enter this code"
+              hint={`Only if the button doesn't work: go to ${state.pending.verificationUri} and type it in. It matches the page your browser opened — connecting there is enough.`}
             >
               <code className="account__code">{state.pending.userCode}</code>
             </Row>
@@ -625,6 +653,24 @@ function AccountSection({
         >
           <Button onClick={() => void window.replay.account.openHelp()}>
             <Icon name="external" size={15} /> Help with Replay.gg
+          </Button>
+        </Row>
+        <Row label="Nova.Help" hint="The support portal: guides, tickets and contact.">
+          <Button onClick={() => void window.replay.account.openSite('help')}>
+            <Icon name="external" size={15} /> Open Nova.Help
+          </Button>
+        </Row>
+        <Row label="Nova" hint="The Nova home page. You can view everything there without signing in.">
+          <Button onClick={() => void window.replay.account.openSite('nova')}>
+            <Icon name="external" size={15} /> Open Nova
+          </Button>
+        </Row>
+        <Row
+          label="Edit your account"
+          hint="Viewing is open to you everywhere. To make changes, use the Nova account page."
+        >
+          <Button onClick={() => void window.replay.account.openSite('account')}>
+            <Icon name="external" size={15} /> Manage account
           </Button>
         </Row>
         <Row

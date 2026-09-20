@@ -63,8 +63,16 @@ function getStore(): JsonStore<Settings> {
   return store
 }
 
+/** Windows screen capture tops out at 60fps; see GDIGRAB_MAX_FPS in captureArgs.ts. */
+const MAX_FPS = 60
+
 export function getSettings(): Settings {
-  return getStore().get()
+  const settings = getStore().get()
+  // Older versions offered 120/144. Show and use what capture can actually deliver.
+  if (settings.capture.fps > MAX_FPS) {
+    return { ...settings, capture: { ...settings.capture, fps: MAX_FPS } }
+  }
+  return settings
 }
 
 export function updateSettings(patch: DeepPartial<Settings>): Settings {

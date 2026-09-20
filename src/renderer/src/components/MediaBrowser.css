@@ -56,7 +56,7 @@
 
 .chip--on {
   background: var(--accent-soft);
-  border-color: rgba(68, 214, 44, 0.3);
+  border-color: rgba(230, 41, 63, 0.3);
   color: var(--accent-bright);
 }
 

@@ -36,7 +36,11 @@ import { fileStorage } from '@nova/account-client/storage/node'
 import type { AccountState } from '@shared/types'
 
 /** Overridable for a local Nova.Help; the only place the address appears. */
-const ORIGIN = process.env.NOVA_ACCOUNTS_ORIGIN ?? 'https://nova.help'
+const ORIGIN = process.env.NOVA_ACCOUNTS_ORIGIN ?? 'https://nova-help.17sh8dy.workers.dev'
+
+/** The Nova site. Viewing is fine anywhere; editing an account happens only at NOVA_ACCOUNT_URL. */
+export const NOVA_URL = 'https://nova-780.pages.dev'
+export const NOVA_ACCOUNT_URL = `${NOVA_URL}/account`
 
 /** Replay.gg's section of the support portal. Real today. */
 export const NOVA_HELP_URL = `${ORIGIN}/help/replay-gg`
@@ -92,6 +96,9 @@ export function getAccountState(): AccountState {
  */
 export async function beginSignIn(): Promise<AccountState> {
   problem = null
+  // One flow at a time. A second click used to mint a NEW code, so the code on screen and the
+  // one typed into the browser could disagree — "that code did not work".
+  if (flow && pending) return state()
   const started = await client.beginSignIn({ deviceName: `Replay.gg on ${safeHostname()}` })
 
   if (!started.ok) {
@@ -103,7 +110,11 @@ export async function beginSignIn(): Promise<AccountState> {
   }
 
   flow = started
-  pending = { userCode: started.userCode, verificationUri: started.verificationUri }
+  pending = {
+    userCode: started.userCode,
+    verificationUri: started.verificationUri,
+    verificationUriComplete: started.verificationUriComplete
+  }
   // A convenience, never the mechanism: the code is on screen and works without this.
   void shell.openExternal(started.verificationUriComplete)
 
@@ -122,6 +133,11 @@ export async function beginSignIn(): Promise<AccountState> {
   return state()
 }
 
+/** Re-open the approval page for the sign-in in flight, code already filled in. */
+export function reopenSignIn(): void {
+  if (pending) void shell.openExternal(pending.verificationUriComplete)
+}
+
 /** Stop waiting. Nothing was stored, so there is nothing to undo. */
 export function cancelSignIn(): AccountState {
   flow?.cancel()
@@ -136,6 +152,12 @@ export async function signOutAccount(): Promise<AccountState> {
   pending = null
   problem = null
   return state()
+}
+
+/** Open one of the fixed Nova sites in the browser. A whitelist, never a renderer-supplied URL. */
+export function openSite(target: 'help' | 'nova' | 'account'): void {
+  const url = { help: `${ORIGIN}/`, nova: NOVA_URL, account: NOVA_ACCOUNT_URL }[target]
+  if (url) void shell.openExternal(url)
 }
 
 /** Open Replay.gg's help on Nova.Help in the user's browser. */

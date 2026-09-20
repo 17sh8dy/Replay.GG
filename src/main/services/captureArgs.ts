@@ -44,9 +44,23 @@ export function bitrateFor(capture: Settings['capture']): number {
   return QUALITY_BITRATE[capture.quality]
 }
 
+/**
+ * gdigrab cannot deliver more than ~60fps. Asking for 120 measured ~43fps here AND broke the
+ * replay buffer's segmenting (the first segment never closed, so it sat on "Warming up"
+ * forever). Cap what we request at what it can actually do.
+ */
+const GDIGRAB_MAX_FPS = 60
+
+/** The frame rate actually requested from the capture source. */
+function captureFps(settings: Settings): number {
+  return process.platform === 'win32'
+    ? Math.min(settings.capture.fps, GDIGRAB_MAX_FPS)
+    : settings.capture.fps
+}
+
 /** Video input args. Prefers the GPU desktop-duplication path on Windows. */
 function videoInput(settings: Settings): string[] {
-  const { fps } = settings.capture
+  const fps = captureFps(settings)
   if (process.platform === 'win32') {
     // ddagrab is a filter-based source; it is markedly cheaper than gdigrab
     // but only exists on newer builds. gdigrab is the safe universal fallback.
@@ -244,7 +258,7 @@ export async function buildCaptureArgs(
   }
 
   args.push('-c:v', ffEncoder, ...encoderQualityArgs(ffEncoder, mbps))
-  args.push('-g', String(settings.capture.fps * 2))
+  args.push('-g', String(captureFps(settings) * 2))
 
   if (nAudio > 0) args.push('-c:a', 'aac', '-b:a', '192k')
 

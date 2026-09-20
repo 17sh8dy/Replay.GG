@@ -122,7 +122,7 @@
 
 .replay-toggle--on {
   background: var(--accent-soft);
-  border-color: rgba(68, 214, 44, 0.3);
+  border-color: rgba(230, 41, 63, 0.3);
 }
 
 .replay-toggle__head {
@@ -142,7 +142,7 @@
   color: var(--accent);
 }
 
-.replay-toggle__head span:first-of-type {
+.replay-toggle__head > span:first-of-type {
   flex: 1;
 }
 
@@ -158,11 +158,11 @@
 
 /* --- Switch -------------------------------------------------------------- */
 .switch {
-  width: 30px;
-  height: 17px;
+  width: 36px;
+  height: 20px;
   border-radius: var(--r-full);
   background: rgba(255, 255, 255, 0.12);
-  padding: 2px;
+  padding: 3px;
   display: flex;
   transition: background var(--t-med) var(--ease-out);
   flex-shrink: 0;
@@ -173,15 +173,15 @@
 }
 
 .switch__knob {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   border-radius: var(--r-full);
   background: #fff;
   transition: transform var(--t-med) var(--ease-out);
 }
 
 .switch--on .switch__knob {
-  transform: translateX(13px);
+  transform: translateX(16px);
 }
 
 /* --- Storage meter ------------------------------------------------------- */

@@ -47,6 +47,8 @@ export const IPC = {
   accountCancel: 'account:cancel-sign-in',
   accountSignOut: 'account:sign-out',
   accountOpenHelp: 'account:open-help',
+  accountOpenSite: 'account:open-site',
+  accountReopenSignIn: 'account:reopen-sign-in',
 
   // Window chrome
   windowMinimize: 'window:minimize',

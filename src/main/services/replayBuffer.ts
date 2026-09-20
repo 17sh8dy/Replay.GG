@@ -25,7 +25,8 @@ const exec = promisify(execFile)
  * losslessly without a re-encode, making saves near-instant.
  */
 
-const SEGMENT_SECONDS = 5
+/* Short segments make the buffer usable within ~2-4s of switching on. */
+const SEGMENT_SECONDS = 2
 
 let child: ChildProcess | null = null
 let pruneTimer: NodeJS.Timeout | null = null
@@ -114,6 +115,10 @@ export async function enableReplayBuffer(): Promise<ReplayBufferStatus> {
 
     const args = await buildCaptureArgs(settings, {
       outputArgs: [
+        /* Force a keyframe at every segment boundary. Relying on -g alone let some encoders
+           (AMD AMF here) go a minute or more between keyframes, so the first segment never
+           closed and the buffer sat on "Warming up" indefinitely. */
+        '-force_key_frames', `expr:gte(t,n_forced*${SEGMENT_SECONDS})`,
         '-f', 'segment',
         '-segment_time', String(SEGMENT_SECONDS),
         '-segment_format', 'mpegts',

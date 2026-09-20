@@ -195,14 +195,19 @@ async function probeDshowDevices(): Promise<string> {
   const bin = await ffmpegPath()
   if (!bin) return ''
 
-  // ffmpeg writes the device list to stderr and exits non-zero by design.
+  // ffmpeg writes the device list to stderr. Older builds exit non-zero by design (the throw
+  // path); ffmpeg 8.x exits 0, so the output has to be read on the success path too — reading
+  // it only on failure made every device list come back empty.
   try {
-    await exec(bin, ['-hide_banner', '-list_devices', 'true', '-f', 'dshow', '-i', 'dummy'], {
+    const res = await exec(bin, ['-hide_banner', '-list_devices', 'true', '-f', 'dshow', '-i', 'dummy'], {
       windowsHide: true
     })
-    return ''
+    return `${res.stderr ?? ''}
+${res.stdout ?? ''}`
   } catch (err) {
-    return (err as { stderr?: string }).stderr ?? ''
+    const e = err as { stderr?: string; stdout?: string }
+    return `${e.stderr ?? ''}
+${e.stdout ?? ''}`
   }
 }
 

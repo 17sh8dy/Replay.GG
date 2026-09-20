@@ -20,6 +20,8 @@ import {
   cancelSignIn,
   getAccountState,
   openHelp,
+  openSite,
+  reopenSignIn,
   refreshAccount,
   signOutAccount
 } from './services/account'
@@ -63,6 +65,8 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.accountCancel, () => cancelSignIn())
   ipcMain.handle(IPC.accountSignOut, () => signOutAccount())
   ipcMain.handle(IPC.accountOpenHelp, () => openHelp())
+  ipcMain.handle(IPC.accountReopenSignIn, () => reopenSignIn())
+  ipcMain.handle(IPC.accountOpenSite, (_e, target: 'help' | 'nova' | 'account') => openSite(target))
 
   // --- Settings ------------------------------------------------------------
   ipcMain.handle(IPC.settingsGet, () => getSettings())

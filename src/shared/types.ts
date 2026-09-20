@@ -206,7 +206,7 @@ export interface AccountState {
   signedIn: boolean
   displayName: string | null
   /** Present while a sign-in is waiting to be approved in a browser. */
-  pending: { userCode: string; verificationUri: string } | null
+  pending: { userCode: string; verificationUri: string; verificationUriComplete: string } | null
   /** Why the last attempt failed, if it did. */
   problem: string | null
 }

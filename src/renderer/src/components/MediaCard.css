@@ -57,7 +57,7 @@
   place-items: center;
   border-radius: var(--r-full);
   background: var(--accent);
-  color: #06210b;
+  color: #ffffff;
   opacity: 0;
   transform: scale(0.8);
   transition: opacity var(--t-med) var(--ease-out), transform var(--t-med) var(--ease-out);
@@ -89,7 +89,7 @@
   padding: 3px 7px;
   border-radius: var(--r-sm);
   background: var(--accent-soft);
-  border: 1px solid rgba(68, 214, 44, 0.3);
+  border: 1px solid rgba(230, 41, 63, 0.3);
   color: var(--accent-bright);
   font-size: 10px;
   font-weight: 700;
@@ -182,7 +182,7 @@
   gap: 3px;
   padding: 3px;
   border-radius: var(--r-md);
-  background: rgba(11, 12, 14, 0.82);
+  background: rgba(8, 8, 8, 0.82);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border);
   opacity: 0;
