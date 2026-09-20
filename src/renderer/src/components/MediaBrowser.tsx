@@ -45,6 +45,11 @@ export function MediaBrowser({
   const [renameValue, setRenameValue] = useState('')
   const [deleting, setDeleting] = useState<MediaItem | null>(null)
 
+  // Select mode: tick individual items, then delete them together.
+  const [selecting, setSelecting] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulk, setBulk] = useState<'selected' | 'all' | null>(null)
+
   const query = useMemo<LibraryQuery>(
     () => ({ kind, search, sort, favoritesOnly, game: game || undefined }),
     [kind, search, sort, favoritesOnly, game]
@@ -89,6 +94,43 @@ export function MediaBrowser({
     const ok = await window.replay.library.remove(deleting.id)
     if (ok) pushToast('success', 'Moved to Recycle Bin')
     setDeleting(null)
+  }
+
+  const exitSelecting = (): void => {
+    setSelecting(false)
+    setSelectedIds(new Set())
+  }
+
+  const toggleSelect = (item: MediaItem): void =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(item.id)) next.delete(item.id)
+      else next.add(item.id)
+      return next
+    })
+
+  // Escape leaves select mode, matching how the rest of the app dismisses things.
+  useEffect(() => {
+    if (!selecting) return
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape' && !bulk) exitSelecting()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selecting, bulk])
+
+  // Only ever act on what is still on screen (a filter change can hide a ticked item).
+  const targets =
+    bulk === 'selected' ? items.filter((i) => selectedIds.has(i.id)) : bulk === 'all' ? items : []
+
+  const confirmBulkDelete = async (): Promise<void> => {
+    const ids = targets.map((i) => i.id)
+    setBulk(null)
+    if (ids.length === 0) return
+    const { removed, failed } = await window.replay.library.removeMany(ids)
+    if (removed > 0) pushToast('success', `Moved ${removed} to Recycle Bin`)
+    if (failed > 0) pushToast('error', `${failed} could not be deleted — they may be in use`)
+    exitSelecting()
   }
 
   const rescan = async (): Promise<void> => {
@@ -143,8 +185,55 @@ export function MediaBrowser({
           </button>
 
           <Button icon="refresh" onClick={() => void rescan()} title="Rescan folders" />
+
+          <Button
+            variant={selecting ? 'primary' : 'secondary'}
+            icon="check"
+            onClick={() => (selecting ? exitSelecting() : setSelecting(true))}
+            disabled={items.length === 0}
+            title="Select items to delete"
+          >
+            {selecting ? 'Done' : 'Select'}
+          </Button>
+
+          <Button
+            variant="danger"
+            icon="trash"
+            onClick={() => setBulk('all')}
+            disabled={items.length === 0}
+            title="Move everything shown to the Recycle Bin"
+          >
+            Delete all
+          </Button>
         </div>
       </header>
+
+      {selecting && (
+        <div className="selectbar">
+          <span>
+            <strong>{selectedIds.size}</strong> selected
+          </span>
+          <Button
+            size="sm"
+            onClick={() =>
+              setSelectedIds(
+                selectedIds.size === items.length ? new Set() : new Set(items.map((i) => i.id))
+              )
+            }
+          >
+            {selectedIds.size === items.length ? 'Clear' : 'Select all'}
+          </Button>
+          <Button
+            size="sm"
+            variant="danger"
+            icon="trash"
+            disabled={selectedIds.size === 0}
+            onClick={() => setBulk('selected')}
+          >
+            Delete selected
+          </Button>
+        </div>
+      )}
 
       <div className="screen__body">
         {loading ? (
@@ -189,6 +278,9 @@ export function MediaBrowser({
                   setRenameValue(i.title)
                 }}
                 onDelete={setDeleting}
+                selecting={selecting}
+                selected={selectedIds.has(item.id)}
+                onToggleSelect={toggleSelect}
               />
             ))}
           </div>
@@ -218,6 +310,16 @@ export function MediaBrowser({
         />
         <p className="dim rename-hint">The file on disk is renamed to match.</p>
       </Modal>
+
+      <Confirm
+        open={bulk !== null}
+        title={bulk === 'all' ? 'Delete everything shown?' : 'Delete selected items?'}
+        message={`${targets.length} item${targets.length === 1 ? '' : 's'} will be moved to the Recycle Bin. You can restore them from there.`}
+        confirmLabel={`Delete ${targets.length}`}
+        destructive
+        onConfirm={() => void confirmBulkDelete()}
+        onCancel={() => setBulk(null)}
+      />
 
       <Confirm
         open={deleting !== null}

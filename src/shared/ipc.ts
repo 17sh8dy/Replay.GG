@@ -21,6 +21,7 @@ export const IPC = {
   libraryGet: 'library:get',
   libraryRename: 'library:rename',
   libraryDelete: 'library:delete',
+  libraryDeleteMany: 'library:delete-many',
   libraryFavorite: 'library:favorite',
   libraryReveal: 'library:reveal',
   libraryGames: 'library:games',

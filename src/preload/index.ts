@@ -42,6 +42,8 @@ const api = {
     rename: (id: string, title: string): Promise<MediaItem | null> =>
       ipcRenderer.invoke(IPC.libraryRename, id, title),
     remove: (id: string): Promise<boolean> => ipcRenderer.invoke(IPC.libraryDelete, id),
+    removeMany: (ids: string[]): Promise<{ removed: number; failed: number }> =>
+      ipcRenderer.invoke(IPC.libraryDeleteMany, ids),
     setFavorite: (id: string, favorite: boolean): Promise<MediaItem | null> =>
       ipcRenderer.invoke(IPC.libraryFavorite, id, favorite),
     reveal: (id: string): Promise<void> => ipcRenderer.invoke(IPC.libraryReveal, id),

@@ -285,6 +285,43 @@ export async function remove(id: string): Promise<boolean> {
   return true
 }
 
+/**
+ * Moves many items to the OS trash in one pass: one save and one refresh at the end
+ * rather than one per file. Files that cannot be trashed (in use) are left in place.
+ */
+export async function removeMany(ids: string[]): Promise<{ removed: number; failed: number }> {
+  const doc = getStore().get()
+  let removed = 0
+  let failed = 0
+
+  for (const id of ids) {
+    const item = doc.items[id]
+    if (!item) continue
+    try {
+      if (existsSync(item.path)) await shell.trashItem(item.path)
+    } catch (err) {
+      console.error('[library] could not trash file', err)
+      failed++
+      continue
+    }
+    if (item.thumbnailPath && existsSync(item.thumbnailPath)) {
+      try {
+        unlinkSync(item.thumbnailPath)
+      } catch {
+        /* best effort */
+      }
+    }
+    delete doc.items[id]
+    removed++
+  }
+
+  if (removed > 0) {
+    persist(doc.items)
+    broadcast('library:changed', { kind: 'all' })
+  }
+  return { removed, failed }
+}
+
 export function reveal(id: string): void {
   const item = get(id)
   if (item && existsSync(item.path)) shell.showItemInFolder(item.path)

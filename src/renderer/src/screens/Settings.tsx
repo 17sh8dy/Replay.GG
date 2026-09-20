@@ -117,6 +117,7 @@ export function Settings(): JSX.Element {
 
         <div className="settings__panel">
           {section === 'capture' && (
+            <>
             <Group title="Video">
               <Row
                 label="Capture display"
@@ -209,6 +210,48 @@ export function Settings(): JSX.Element {
                 />
               </Row>
             </Group>
+
+              <Group title="Webcam">
+                <Row label="Show webcam overlay">
+                  <Toggle
+                    checked={settings.webcam.enabled}
+                    onChange={(enabled) =>
+                      void updateSettings({
+                        webcam: {
+                          enabled,
+                          ...(enabled && !settings.webcam.deviceId && videoDevices[0]
+                            ? { deviceId: videoDevices[0].id }
+                            : {})
+                        }
+                      })
+                    }
+                  />
+                </Row>
+                <Row label="Camera">
+                  <Select
+                    value={settings.webcam.deviceId ?? ''}
+                    onChange={(deviceId) => void updateSettings({ webcam: { deviceId: deviceId || null } })}
+                    options={videoDeviceOptions}
+                  />
+                </Row>
+                <Row label="Position">
+                  <Select
+                    value={settings.webcam.position}
+                    onChange={(position) => void updateSettings({ webcam: { position } })}
+                    options={webcamPositionOptions}
+                  />
+                </Row>
+                <Row label="Size" hint="How wide the overlay is, as a share of the recorded frame.">
+                  <Slider
+                    value={settings.webcam.size}
+                    min={10}
+                    max={45}
+                    onChange={(size) => void updateSettings({ webcam: { size } })}
+                    format={(v) => `${v}%`}
+                  />
+                </Row>
+              </Group>
+            </>
           )}
 
           {section === 'audio' && (
@@ -275,47 +318,6 @@ export function Settings(): JSX.Element {
                   <Toggle
                     checked={settings.audio.separateTracks}
                     onChange={(separateTracks) => void updateSettings({ audio: { separateTracks } })}
-                  />
-                </Row>
-              </Group>
-
-              <Group title="Webcam">
-                <Row label="Show webcam overlay">
-                  <Toggle
-                    checked={settings.webcam.enabled}
-                    onChange={(enabled) =>
-                      void updateSettings({
-                        webcam: {
-                          enabled,
-                          ...(enabled && !settings.webcam.deviceId && videoDevices[0]
-                            ? { deviceId: videoDevices[0].id }
-                            : {})
-                        }
-                      })
-                    }
-                  />
-                </Row>
-                <Row label="Camera">
-                  <Select
-                    value={settings.webcam.deviceId ?? ''}
-                    onChange={(deviceId) => void updateSettings({ webcam: { deviceId: deviceId || null } })}
-                    options={videoDeviceOptions}
-                  />
-                </Row>
-                <Row label="Position">
-                  <Select
-                    value={settings.webcam.position}
-                    onChange={(position) => void updateSettings({ webcam: { position } })}
-                    options={webcamPositionOptions}
-                  />
-                </Row>
-                <Row label="Size" hint="How wide the overlay is, as a share of the recorded frame.">
-                  <Slider
-                    value={settings.webcam.size}
-                    min={10}
-                    max={45}
-                    onChange={(size) => void updateSettings({ webcam: { size } })}
-                    format={(v) => `${v}%`}
                   />
                 </Row>
               </Group>

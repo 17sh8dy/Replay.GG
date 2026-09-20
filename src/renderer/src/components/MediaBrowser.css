@@ -68,3 +68,25 @@
   margin-top: 9px;
   font-size: 12px;
 }
+
+/* --- Select-mode bar ------------------------------------------------------ */
+.selectbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 28px 10px;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.selectbar strong {
+  color: var(--text);
+}
+
+.selectbar .btn:last-child {
+  margin-left: auto;
+}

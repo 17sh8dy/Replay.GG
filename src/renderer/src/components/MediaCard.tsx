@@ -9,6 +9,10 @@ interface MediaCardProps {
   onToggleFavorite: (item: MediaItem) => void
   onDelete: (item: MediaItem) => void
   onRename: (item: MediaItem) => void
+  /** Select mode: the whole card toggles selection instead of playing. */
+  selecting?: boolean
+  selected?: boolean
+  onToggleSelect?: (item: MediaItem) => void
 }
 
 export function MediaCard({
@@ -16,13 +20,23 @@ export function MediaCard({
   onOpen,
   onToggleFavorite,
   onDelete,
-  onRename
+  onRename,
+  selecting = false,
+  selected = false,
+  onToggleSelect
 }: MediaCardProps): JSX.Element {
   const thumb = item.thumbnailPath ? window.replay.mediaUrl(item.thumbnailPath) : null
 
   return (
-    <article className="card" onDoubleClick={() => onOpen(item)}>
-      <button className="card__thumb" onClick={() => onOpen(item)} aria-label={`Play ${item.title}`}>
+    <article
+      className={`card${selecting ? ' card--selecting' : ''}${selected ? ' card--selected' : ''}`}
+      onDoubleClick={() => !selecting && onOpen(item)}
+    >
+      <button
+        className="card__thumb"
+        onClick={() => (selecting ? onToggleSelect?.(item) : onOpen(item))}
+        aria-label={selecting ? `Select ${item.title}` : `Play ${item.title}`}
+      >
         {thumb ? (
           <img src={thumb} alt="" loading="lazy" draggable={false} />
         ) : (
@@ -39,6 +53,19 @@ export function MediaCard({
 
         {item.kind === 'clip' && <span className="card__badge">CLIP</span>}
       </button>
+
+      {/* The glass tick-box only exists in select mode, so the grid stays clean otherwise. */}
+      {selecting && (
+        <button
+          className={`card__select${selected ? ' card__select--on' : ''}`}
+          onClick={() => onToggleSelect?.(item)}
+          role="checkbox"
+          aria-checked={selected}
+          aria-label={`Select ${item.title}`}
+        >
+          {selected && <Icon name="check" size={15} strokeWidth={2.6} />}
+        </button>
+      )}
 
       <div className="card__body">
         <div className="card__title-row">

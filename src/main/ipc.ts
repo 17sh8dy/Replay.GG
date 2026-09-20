@@ -47,6 +47,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.libraryGet, (_e, id: string) => library.get(id))
   ipcMain.handle(IPC.libraryRename, (_e, id: string, title: string) => library.rename(id, title))
   ipcMain.handle(IPC.libraryDelete, (_e, id: string) => library.remove(id))
+  ipcMain.handle(IPC.libraryDeleteMany, (_e, ids: string[]) => library.removeMany(ids))
   ipcMain.handle(IPC.libraryFavorite, (_e, id: string, favorite: boolean) =>
     library.setFavorite(id, favorite)
   )
