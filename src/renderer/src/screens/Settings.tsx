@@ -589,15 +589,15 @@ function AccountSection({
           <>
             <Row
               label="Approve in your browser"
-              hint="Your browser opened with this app's request. Sign in to Nova and choose Connect — no typing needed. It expires in ten minutes."
+              hint="Your browser opened with this app's request. Sign in to Nova, choose Connect, then type the code below to finish. It expires in ten minutes."
             >
               <Button onClick={() => void window.replay.account.reopenSignIn()}>
                 <Icon name="external" size={15} /> Open browser again
               </Button>
             </Row>
             <Row
-              label="Or enter this code"
-              hint={`Only if the button doesn't work: go to ${state.pending.verificationUri} and type it in. It matches the page your browser opened — connecting there is enough.`}
+              label="Your code"
+              hint={`Type this on the last step to confirm it's this app. If the page didn't open, go to ${state.pending.verificationUri} and enter it there.`}
             >
               <code className="account__code">{state.pending.userCode}</code>
             </Row>
