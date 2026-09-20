@@ -1,3 +1,4 @@
+import { WebcamPreview } from '../components/WebcamPreview'
 import { useEffect, useState, type ReactNode } from 'react'
 import type {
   AccountState,
@@ -234,6 +235,12 @@ export function Settings(): JSX.Element {
                     options={videoDeviceOptions}
                   />
                 </Row>
+                <WebcamPreview
+                  label={settings.webcam.deviceId}
+                  enabled={settings.webcam.enabled}
+                  size={settings.webcam.size}
+                  position={settings.webcam.position}
+                />
                 <Row label="Position">
                   <Select
                     value={settings.webcam.position}
