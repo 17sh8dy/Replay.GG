@@ -6,6 +6,7 @@ import * as library from './services/library'
 import { getSettings, resetSettings, updateSettings } from './services/settings'
 import { applyLaunchOnStartup } from './services/startup'
 import { openProduct } from './services/products'
+import { checkForUpdates, downloadUpdate, getUpdateStatus, installUpdate } from './services/updater'
 import { getRecordingStatus, startRecording, stopRecording } from './services/recorder'
 import {
   disableReplayBuffer,
@@ -72,6 +73,11 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.accountOpenSite, (_e, target: 'help' | 'nova' | 'account') => openSite(target))
 
   // --- Settings ------------------------------------------------------------
+  ipcMain.handle(IPC.updateStatus, () => getUpdateStatus())
+  ipcMain.handle(IPC.updateCheck, () => checkForUpdates())
+  ipcMain.handle(IPC.updateDownload, () => downloadUpdate())
+  ipcMain.handle(IPC.updateInstall, () => installUpdate())
+
   ipcMain.handle(IPC.productOpen, (_e, id: string) => openProduct(String(id)))
 
   ipcMain.handle(IPC.settingsGet, () => getSettings())

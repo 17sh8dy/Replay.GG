@@ -190,11 +190,28 @@ export interface LibraryQuery {
 }
 
 /** Payload for main -> renderer push events. */
+/** Where auto-update stands. See main/services/updater.ts. */
+export interface UpdateStatus {
+  /** `unsupported` in a development run: there is no installed app to update. */
+  state: 'unsupported' | 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'
+  currentVersion: string
+  /** The newer version, once one has been found. */
+  latestVersion: string | null
+  /** 0-100 while downloading. */
+  progress: number
+  /** When the last check finished (ms since epoch), or null if none has. */
+  checkedAt: number | null
+  error: string | null
+  /** Plain-text release notes for the new version, when the release has any. */
+  notes: string | null
+}
+
 export interface AppEvents {
   'recording:status': RecordingStatus
   'replay:status': ReplayBufferStatus
   'library:changed': { kind: MediaKind | 'all' }
   'toast': { level: 'info' | 'success' | 'error'; message: string }
+  'update:status': UpdateStatus
 }
 
 /**

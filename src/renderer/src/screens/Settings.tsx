@@ -1,4 +1,5 @@
 import { WebcamPreview } from '../components/WebcamPreview'
+import { UpdatesGroup } from '../components/UpdatesGroup'
 import { useEffect, useState, type ReactNode } from 'react'
 import type {
   AccountState,
@@ -487,6 +488,8 @@ export function Settings(): JSX.Element {
                   />
                 </Row>
               </Group>
+
+              <UpdatesGroup />
 
               <Group title="System">
                 <Row label="ffmpeg">

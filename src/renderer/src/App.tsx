@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { TitleBar } from './components/TitleBar'
 import { Sidebar } from './components/Sidebar'
 import { Toaster } from './components/Toaster'
+import { UpdateCard } from './components/UpdateCard'
 import { Home } from './screens/Home'
 import { Recordings } from './screens/Recordings'
 import { Clips } from './screens/Clips'
@@ -58,6 +59,7 @@ export default function App(): JSX.Element {
           {route === 'upgrade' && <Upgrade />}
         </main>
       </div>
+      <UpdateCard />
       <Toaster />
     </div>
   )

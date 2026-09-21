@@ -9,6 +9,7 @@ import { rescan } from './services/library'
 import { shutdownRecorder, toggleRecording } from './services/recorder'
 import { enableReplayBuffer, saveReplay, shutdownReplayBuffer } from './services/replayBuffer'
 import { launchedAtLogin, syncLaunchOnStartup } from './services/startup'
+import { initUpdater } from './services/updater'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -176,6 +177,7 @@ if (!gotLock) {
     ensureStorageDirs()
     registerHotkeys()
     syncLaunchOnStartup()
+    initUpdater()
     createTray()
     createWindow()
 

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { EVENT_CHANNEL, IPC } from '@shared/ipc'
-import type { AccountState } from '@shared/types'
+import type { AccountState, UpdateStatus } from '@shared/types'
 import type {
   AppEvents,
   AudioDevice,
@@ -59,6 +59,15 @@ const api = {
       ipcRenderer.invoke(IPC.settingsUpdate, patch),
     reset: (): Promise<Settings> => ipcRenderer.invoke(IPC.settingsReset),
     pickFolder: (): Promise<string | null> => ipcRenderer.invoke(IPC.settingsPickFolder)
+  },
+
+  /** Auto-update. Nothing downloads or installs unless the person asks (see services/updater.ts). */
+  update: {
+    status: (): Promise<UpdateStatus> => ipcRenderer.invoke(IPC.updateStatus),
+    check: (): Promise<UpdateStatus> => ipcRenderer.invoke(IPC.updateCheck),
+    download: (): Promise<UpdateStatus> => ipcRenderer.invoke(IPC.updateDownload),
+    install: (): Promise<{ ok: boolean; reason?: 'recording' | 'not-ready' }> =>
+      ipcRenderer.invoke(IPC.updateInstall)
   },
 
   /**

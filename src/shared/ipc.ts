@@ -34,6 +34,12 @@ export const IPC = {
   settingsReset: 'settings:reset',
   settingsPickFolder: 'settings:pick-folder',
 
+  // Auto-update
+  updateStatus: 'update:status',
+  updateCheck: 'update:check',
+  updateDownload: 'update:download',
+  updateInstall: 'update:install',
+
   // Nova product switcher
   productOpen: 'products:open',
 

@@ -107,6 +107,24 @@ room for the camera at index 1.
 
 ---
 
+## Releasing an update
+
+Installed copies check GitHub for a newer version shortly after they start and every few hours
+after that. They only *check*: an "Update available" card appears, and nothing downloads or
+installs until the person clicks (see `src/main/services/updater.ts`).
+
+To ship a new version:
+
+1. Bump `version` in `package.json` (for example `0.2.0`).
+2. `npm run dist`. This writes `release/Replay.gg-<version>-setup.exe`, its `.blockmap` and
+   `release/latest.yml`.
+3. Create a GitHub release on `17sh8dy/Replay.GG` tagged `v<version>` and upload **all three
+   files**. The release notes are shown in the update card.
+4. Publish it (not as a draft or pre-release). Copies running an older version will offer it.
+
+`latest.yml` is what the app reads; without it on the release, nobody is told. Updates are
+version-compared, so the new version must be higher than the one installed.
+
 ## Known gaps
 
 - **System audio on Windows** needs a loopback device (Stereo Mix, VB-Cable,

@@ -13,7 +13,8 @@ import type {
   ReplayBufferStatus,
   Settings,
   StorageUsage,
-  SystemCapabilities
+  SystemCapabilities,
+  UpdateStatus
 } from '@shared/types'
 
 /**
@@ -39,6 +40,7 @@ interface AppState {
   /** Increments whenever the library changes; screens depend on it to refetch. */
   libraryVersion: number
   toasts: Toast[]
+  update: UpdateStatus
 
   updateSettings: (patch: DeepPartial<Settings>) => Promise<void>
   resetSettings: () => Promise<void>
@@ -69,6 +71,16 @@ const IDLE_REPLAY: ReplayBufferStatus = {
   error: null
 }
 
+const IDLE_UPDATE: UpdateStatus = {
+  state: 'unsupported',
+  currentVersion: '',
+  latestVersion: null,
+  progress: 0,
+  checkedAt: null,
+  error: null,
+  notes: null
+}
+
 const AppContext = createContext<AppState | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }): JSX.Element {
@@ -78,6 +90,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
   const [replay, setReplay] = useState<ReplayBufferStatus>(IDLE_REPLAY)
   const [capabilities, setCapabilities] = useState<SystemCapabilities | null>(null)
   const [storage, setStorage] = useState<StorageUsage | null>(null)
+  const [update, setUpdate] = useState<UpdateStatus>(IDLE_UPDATE)
   const [libraryVersion, setLibraryVersion] = useState(0)
   const [toasts, setToasts] = useState<Toast[]>([])
 
@@ -107,12 +120,13 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
   useEffect(() => {
     let cancelled = false
     void (async () => {
-      const [s, rec, rep, caps, use] = await Promise.all([
+      const [s, rec, rep, caps, use, upd] = await Promise.all([
         window.replay.settings.get(),
         window.replay.recording.status(),
         window.replay.replay.status(),
         window.replay.system.capabilities(),
-        window.replay.system.storage()
+        window.replay.system.storage(),
+        window.replay.update.status()
       ])
       if (cancelled) return
       setSettings(s)
@@ -120,6 +134,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       setReplay(rep)
       setCapabilities(caps)
       setStorage(use)
+      setUpdate(upd)
       setReady(true)
     })()
     return () => {
@@ -136,12 +151,14 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       void refreshStorage()
     })
     const offToast = window.replay.on('toast', ({ level, message }) => pushToast(level, message))
+    const offUpdate = window.replay.on('update:status', setUpdate)
 
     return () => {
       offRecording()
       offReplay()
       offLibrary()
       offToast()
+      offUpdate()
     }
   }, [pushToast, refreshStorage])
 
@@ -186,6 +203,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       storage,
       libraryVersion,
       toasts,
+      update,
       updateSettings,
       resetSettings,
       refreshStorage,
@@ -205,6 +223,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       storage,
       libraryVersion,
       toasts,
+      update,
       updateSettings,
       resetSettings,
       refreshStorage,

@@ -17,6 +17,13 @@ extraResources:
     filter:
       - '**/*'
 
+# Updates: the app reads latest.yml from the newest GitHub release of this repo. Publish a release
+# by uploading the installer and latest.yml (and the .blockmap) that `npm run dist` writes to release/.
+publish:
+  provider: github
+  owner: 17sh8dy
+  repo: Replay.GG
+
 win:
   icon: assets/logo/png/replay-gg.ico
   target:
