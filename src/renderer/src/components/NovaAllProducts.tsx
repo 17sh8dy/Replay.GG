@@ -20,7 +20,8 @@ export interface NovaAllProduct {
   label: string
   tagline: string
   icon: IconName
-  url: string | null
+  /** 'app' launches the installed program, 'site' opens the browser, 'soon' is disabled. */
+  kind: 'app' | 'site' | 'soon'
 }
 
 interface Props {
@@ -29,10 +30,12 @@ interface Props {
   current: string
   currentLabel?: string
   products: NovaAllProduct[]
+  /** Websites, shown in their own section under the apps. */
+  sites?: NovaAllProduct[]
   mark: React.ReactNode
 }
 
-export function NovaAllProducts({ open, onClose, current, currentLabel, products, mark }: Props): JSX.Element | null {
+export function NovaAllProducts({ open, onClose, current, currentLabel, products, sites = [], mark }: Props): JSX.Element | null {
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -44,6 +47,51 @@ export function NovaAllProducts({ open, onClose, current, currentLabel, products
     closeRef.current?.focus()
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
+
+  const renderCard = (p: NovaAllProduct, i: number): JSX.Element => {
+    const isCurrent = p.id === current
+    const label = isCurrent && currentLabel ? currentLabel : p.label
+    const body = (
+      <>
+        <span className="nova-all__icon">
+          <Icon name={p.icon} size={20} />
+        </span>
+        <span className="nova-all__label">{label}</span>
+        <span className="nova-all__tagline">{isCurrent ? "You're here" : p.tagline}</span>
+      </>
+    )
+    const style = { animationDelay: `${i * 40}ms` }
+
+    if (isCurrent) {
+      return (
+        <span key={p.id} className="nova-all__card nova-all__card--current" style={style}>
+          {body}
+        </span>
+      )
+    }
+    if (p.kind === 'soon') {
+      return (
+        <span key={p.id} className="nova-all__card nova-all__card--soon" style={style}>
+          {body}
+          <span className="nova-all__badge">Soon</span>
+        </span>
+      )
+    }
+    return (
+      <button
+        key={p.id}
+        type="button"
+        className="nova-all__card"
+        style={style}
+        onClick={() => {
+          onClose()
+          void window.replay.products.open(p.id)
+        }}
+      >
+        {body}
+      </button>
+    )
+  }
 
   if (!open) return null
 
@@ -69,43 +117,14 @@ export function NovaAllProducts({ open, onClose, current, currentLabel, products
           All products
         </h2>
         <p className="nova-all__subtitle">Everything Nova makes, in one place.</p>
-        <div className="nova-all__grid">
-          {products.map((p, i) => {
-            const isCurrent = p.id === current
-            const label = isCurrent && currentLabel ? currentLabel : p.label
-            const body = (
-              <>
-                <span className="nova-all__icon">
-                  <Icon name={p.icon} size={20} />
-                </span>
-                <span className="nova-all__label">{label}</span>
-                <span className="nova-all__tagline">{isCurrent ? "You're here" : p.tagline}</span>
-              </>
-            )
-            const style = { animationDelay: `${i * 40}ms` }
-
-            if (isCurrent) {
-              return (
-                <span key={p.id} className="nova-all__card nova-all__card--current" style={style}>
-                  {body}
-                </span>
-              )
-            }
-            if (!p.url) {
-              return (
-                <span key={p.id} className="nova-all__card nova-all__card--soon" style={style}>
-                  {body}
-                  <span className="nova-all__badge">Soon</span>
-                </span>
-              )
-            }
-            return (
-              <a key={p.id} className="nova-all__card" href={p.url} target="_blank" rel="noreferrer" style={style}>
-                {body}
-              </a>
-            )
-          })}
-        </div>
+        <p className="nova-all__section">Apps</p>
+        <div className="nova-all__grid">{products.map(renderCard)}</div>
+        {sites.length > 0 && (
+          <>
+            <p className="nova-all__section">Websites</p>
+            <div className="nova-all__grid">{sites.map(renderCard)}</div>
+          </>
+        )}
       </div>
     </div>
   )

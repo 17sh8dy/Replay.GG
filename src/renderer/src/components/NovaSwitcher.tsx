@@ -18,25 +18,44 @@ import './NovaSwitcher.css'
  * in it. Online Earth was never asked for and isn't here either.
  */
 
+export type NovaProductKind = 'app' | 'site' | 'soon'
+
 interface NovaProduct {
   id: string
   label: string
   tagline: string
   icon: IconName
   /**
-   * None of these has a confirmed public domain yet. TODO: confirm the real URL for each before
-   * this ships — a wrong guess here sends someone to an unregistered domain, not somewhere
-   * unsafe, but it should be fixed before launch. `null` (Nova Games) means there is genuinely
-   * nothing to link to yet, not just an unconfirmed one — that row renders disabled instead.
+   * What kind of thing this is, because opening one is a different act:
+   *   'app'  — a desktop app. Launched by the main process (found on this PC, started in the
+   *            background); if it isn't installed the person is sent to its page or told so.
+   *   'site' — a website, opened in the default browser.
+   *   'soon' — nothing to open yet; the row renders disabled.
+   * The addresses and program names themselves live in the main process (services/products.ts),
+   * keyed by `id` — this list is only what gets shown.
    */
-  url: string | null
+  kind: NovaProductKind
 }
 
 const PRODUCTS: NovaProduct[] = [
-  { id: 'nova-cut', label: 'Nova Cut', tagline: 'Create and edit', icon: 'scissors', url: 'https://novacut.app' },
-  { id: 'replay-gg', label: 'Replay.GG', tagline: 'Record and clip gameplay', icon: 'bolt', url: 'https://replay.gg' },
-  { id: 'atlas', label: 'Atlas', tagline: 'Your desktop assistant', icon: 'star', url: 'https://atlas.app' },
-  { id: 'nova-games', label: 'Nova Games', tagline: 'Coming soon', icon: 'gamepad', url: null }
+  { id: 'nova-cut', label: 'Nova Cut', tagline: 'Create and edit', icon: 'scissors', kind: 'soon' },
+  { id: 'replay-gg', label: 'Replay.GG', tagline: 'Record and clip gameplay', icon: 'bolt', kind: 'app' },
+  { id: 'atlas', label: 'Atlas', tagline: 'Your desktop assistant', icon: 'star', kind: 'app' },
+  { id: 'nova-games', label: 'Nova Games', tagline: 'Coming soon', icon: 'gamepad', kind: 'soon' }
+]
+
+/**
+ * The Nova websites, shown under "Websites" in View all (not in the quick dropdown, which is for
+ * jumping between apps). Only sites that are deployed and have a real address are links; the
+ * rest render as "Soon" until they are. The addresses live in the main process
+ * (services/products.ts), keyed by `id`, like the apps.
+ */
+const SITES: NovaProduct[] = [
+  { id: 'nova-help', label: 'Nova.Help', tagline: 'Support and guides', icon: 'search', kind: 'site' },
+  { id: 'atlas-site', label: 'Atlas Website', tagline: 'Download and learn about Atlas', icon: 'star', kind: 'site' },
+  { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'soon' },
+  { id: 'nova-legal', label: 'Nova Legal', tagline: 'Terms and privacy', icon: 'library', kind: 'soon' },
+  { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut, on the web', icon: 'scissors', kind: 'soon' }
 ]
 
 /** The Nova sparkle mark — identical to assets/favicon.svg in the Nova repo. */
@@ -121,7 +140,7 @@ export function NovaSwitcher({ current }: { current: string }): JSX.Element {
               </span>
             )
           }
-          if (!p.url) {
+          if (p.kind === 'soon') {
             return (
               <span
                 key={p.id}
@@ -135,9 +154,19 @@ export function NovaSwitcher({ current }: { current: string }): JSX.Element {
             )
           }
           return (
-            <a key={p.id} className="nova-switcher__item" role="menuitem" href={p.url} target="_blank" rel="noreferrer">
+            <button
+              key={p.id}
+              type="button"
+              className="nova-switcher__item"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false)
+                void window.replay.products.open(p.id)
+              }}
+            >
               {body}
-            </a>
+              {p.kind === 'site' && <Icon name="external" size={13} className="nova-switcher__kind" />}
+            </button>
           )
         })}
         <button
@@ -157,6 +186,7 @@ export function NovaSwitcher({ current }: { current: string }): JSX.Element {
         onClose={() => setAllOpen(false)}
         current={current}
         products={PRODUCTS}
+        sites={SITES}
         mark={<NovaMark />}
       />
     </div>

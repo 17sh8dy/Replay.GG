@@ -61,6 +61,16 @@ const api = {
     pickFolder: (): Promise<string | null> => ipcRenderer.invoke(IPC.settingsPickFolder)
   },
 
+  /**
+   * The Nova product switcher. Sends a product ID only; the main process decides whether that
+   * is a website (opened in the default browser) or an installed app (launched in the
+   * background), so the renderer can never ask for an arbitrary path or address.
+   */
+  products: {
+    open: (id: string): Promise<'launched' | 'focused' | 'running' | 'browser' | 'unknown'> =>
+      ipcRenderer.invoke(IPC.productOpen, id)
+  },
+
   system: {
     capabilities: (): Promise<SystemCapabilities> => ipcRenderer.invoke(IPC.systemCapabilities),
     storage: (): Promise<StorageUsage> => ipcRenderer.invoke(IPC.systemStorage),

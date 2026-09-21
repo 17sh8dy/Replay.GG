@@ -128,9 +128,17 @@
   color: var(--text);
   text-decoration: none;
   cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font: inherit;
 }
 
-a.nova-switcher__item:hover {
+.nova-switcher__kind {
+  margin-left: auto;
+  color: var(--text-tertiary);
+}
+
+button.nova-switcher__item:hover {
   background: var(--bg-hover);
 }
 

@@ -105,6 +105,8 @@
   color: var(--text);
   text-decoration: none;
   cursor: pointer;
+  text-align: left;
+  font: inherit;
   opacity: 0;
   transform: translateY(14px) scale(0.97);
   animation: nova-all-pop 380ms var(--ease-out) both;
@@ -121,14 +123,14 @@
   }
 }
 
-a.nova-all__card {
+button.nova-all__card {
   transition:
     transform var(--t-med) var(--ease-out),
     border-color var(--t-med) var(--ease-out),
     background var(--t-med) var(--ease-out),
     box-shadow var(--t-med) var(--ease-out);
 }
-a.nova-all__card:hover {
+button.nova-all__card:hover {
   background: var(--bg-elevated);
   border-color: var(--accent);
   transform: translateY(-3px);
@@ -189,4 +191,19 @@ a.nova-all__card:hover {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 11px;
   }
+}
+
+/* Section labels inside View all: "Apps" / "Websites". */
+.nova-all__section {
+  margin: 26px 0 12px;
+  text-align: left;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.nova-all__section:first-of-type {
+  margin-top: 0;
 }

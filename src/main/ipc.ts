@@ -5,6 +5,7 @@ import type { DeepPartial } from './store'
 import * as library from './services/library'
 import { getSettings, resetSettings, updateSettings } from './services/settings'
 import { applyLaunchOnStartup } from './services/startup'
+import { openProduct } from './services/products'
 import { getRecordingStatus, startRecording, stopRecording } from './services/recorder'
 import {
   disableReplayBuffer,
@@ -71,6 +72,8 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.accountOpenSite, (_e, target: 'help' | 'nova' | 'account') => openSite(target))
 
   // --- Settings ------------------------------------------------------------
+  ipcMain.handle(IPC.productOpen, (_e, id: string) => openProduct(String(id)))
+
   ipcMain.handle(IPC.settingsGet, () => getSettings())
   ipcMain.handle(IPC.settingsUpdate, (_e, patch: DeepPartial<Settings>) => {
     const next = updateSettings(patch)

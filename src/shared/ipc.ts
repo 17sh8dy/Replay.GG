@@ -34,6 +34,9 @@ export const IPC = {
   settingsReset: 'settings:reset',
   settingsPickFolder: 'settings:pick-folder',
 
+  // Nova product switcher
+  productOpen: 'products:open',
+
   // System
   systemCapabilities: 'system:capabilities',
   systemStorage: 'system:storage',
