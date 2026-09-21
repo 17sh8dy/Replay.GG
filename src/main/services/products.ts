@@ -44,6 +44,7 @@ const TARGETS: Record<string, Target> = {
     label: 'Nova.Help',
     url: 'https://nova-help.17sh8dy.workers.dev/'
   },
+  nova: { kind: 'site', label: 'Nova', url: 'https://nova-780.pages.dev/' },
   'atlas-site': {
     kind: 'site',
     label: 'Atlas Website',

@@ -53,7 +53,7 @@ const PRODUCTS: NovaProduct[] = [
 const SITES: NovaProduct[] = [
   { id: 'nova-help', label: 'Nova.Help', tagline: 'Support and guides', icon: 'search', kind: 'site' },
   { id: 'atlas-site', label: 'Atlas Website', tagline: 'Download and learn about Atlas', icon: 'star', kind: 'site' },
-  { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'soon' },
+  { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'site' },
   { id: 'nova-legal', label: 'Nova Legal', tagline: 'Terms and privacy', icon: 'library', kind: 'soon' },
   { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut, on the web', icon: 'scissors', kind: 'soon' }
 ]
