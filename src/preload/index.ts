@@ -61,6 +61,11 @@ const api = {
     pickFolder: (): Promise<string | null> => ipcRenderer.invoke(IPC.settingsPickFolder)
   },
 
+  /** Shows the "Clip Captured" overlay once, with sample numbers, so settings can be tried out. */
+  notifications: {
+    previewClip: (): Promise<void> => ipcRenderer.invoke(IPC.clipNotificationPreview)
+  },
+
   /** Auto-update. Nothing downloads or installs unless the person asks (see services/updater.ts). */
   update: {
     status: (): Promise<UpdateStatus> => ipcRenderer.invoke(IPC.updateStatus),

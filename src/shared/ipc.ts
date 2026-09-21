@@ -34,6 +34,9 @@ export const IPC = {
   settingsReset: 'settings:reset',
   settingsPickFolder: 'settings:pick-folder',
 
+  // Clip captured overlay
+  clipNotificationPreview: 'notifications:preview-clip',
+
   // Auto-update
   updateStatus: 'update:status',
   updateCheck: 'update:check',

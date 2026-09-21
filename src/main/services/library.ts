@@ -1,3 +1,4 @@
+import { notifyClipSaved } from './clipNotification'
 import { execFile } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, renameSync, statSync, unlinkSync } from 'node:fs'
 import { basename, extname, join } from 'node:path'
@@ -369,7 +370,10 @@ export async function createClip(request: ClipRequest): Promise<MediaItem | null
     )
 
     const item = await addFromFile(output, 'clip', source.game, source.id)
-    if (item) toast('success', 'Clip created')
+    if (item) {
+      toast('success', 'Clip created')
+      notifyClipSaved(item)
+    }
     return item
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

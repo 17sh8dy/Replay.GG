@@ -52,6 +52,17 @@ function defaultSettings(): Settings {
       launchOnStartup: false,
       minimizeToTray: true,
       showNotifications: true
+    },
+    notifications: {
+      clipCapture: {
+        enabled: true,
+        display: 'all',
+        position: 'top-right',
+        customX: 50,
+        customY: 10,
+        duration: 3,
+        animation: 'fade-slide'
+      }
     }
   }
 }

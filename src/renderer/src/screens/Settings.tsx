@@ -1,5 +1,6 @@
 import { WebcamPreview } from '../components/WebcamPreview'
 import { UpdatesGroup } from '../components/UpdatesGroup'
+import { ClipNotificationGroup } from '../components/ClipNotificationGroup'
 import { useEffect, useState, type ReactNode } from 'react'
 import type {
   AccountState,
@@ -488,6 +489,8 @@ export function Settings(): JSX.Element {
                   />
                 </Row>
               </Group>
+
+              <ClipNotificationGroup />
 
               <UpdatesGroup />
 

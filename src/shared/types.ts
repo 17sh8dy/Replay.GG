@@ -73,6 +73,21 @@ export interface Hotkey {
   accelerator: string
 }
 
+/** The optional "Clip Captured" overlay. See main/services/clipNotification.ts. */
+export interface ClipNotificationSettings {
+  enabled: boolean
+  /** `'all'` or a display id (see DisplayInfo). */
+  display: string
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'custom'
+  /** 0-100: how far across the screen, when position is `custom`. */
+  customX: number
+  /** 0-100: how far down the screen, when position is `custom`. */
+  customY: number
+  /** Seconds on screen, 1-5. */
+  duration: number
+  animation: 'fade' | 'slide' | 'fade-slide' | 'none'
+}
+
 export interface Settings {
   capture: {
     mode: CaptureMode
@@ -127,6 +142,9 @@ export interface Settings {
     launchOnStartup: boolean
     minimizeToTray: boolean
     showNotifications: boolean
+  }
+  notifications: {
+    clipCapture: ClipNotificationSettings
   }
 }
 

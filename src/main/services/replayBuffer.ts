@@ -12,6 +12,7 @@ import { detectActiveGame } from './games'
 import { addFromFile } from './library'
 import { gracefulStop } from './recorder'
 import { broadcast, toast } from './events'
+import { notifyClipSaved } from './clipNotification'
 
 const exec = promisify(execFile)
 
@@ -258,8 +259,9 @@ export async function saveReplay(seconds?: number): Promise<string | null> {
       /* best effort */
     }
 
-    await addFromFile(output, 'clip', game)
+    const saved = await addFromFile(output, 'clip', game)
     toast('success', `Saved last ${want}s`)
+    notifyClipSaved(saved)
     return output
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

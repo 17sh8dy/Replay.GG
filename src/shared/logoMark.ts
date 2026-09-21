@@ -1,0 +1,9 @@
+/**
+ * The Replay.gg mark (R + rewind) as raw SVG data, shared by the renderer's <LogoMark> and the
+ * main process's clip-captured overlay. Same vector as assets/logo/replay-gg-mark.svg.
+ */
+export const MARK_VIEWBOX = '108.8 125.2 287.8 287.8'
+export const MARK_R_PATH =
+  'M160.4 180H315A54.25 54.25 0 0 1 323.3 287.9L374.6 358.2H319.5L271.9 291.2V251.7H307.2A18.45 18.45 0 0 0 307.2 214.8H184.2Z'
+export const MARK_ARROWS_PATH =
+  'M133.26 268.3L185.04 225.25Q187.5 223.2 187.5 226.4L187.5 314.3Q187.5 317.5 185.04 315.45L133.26 272.4Q130.8 270.35 133.26 268.3ZM187.46 268.3L239.24 225.25Q241.7 223.2 241.7 226.4L241.7 314.3Q241.7 317.5 239.24 315.45L187.46 272.4Q185 270.35 187.46 268.3Z'
