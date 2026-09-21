@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon } from './Icon'
+import { LogoMark } from './Logo'
 import { NovaSwitcher } from './NovaSwitcher'
 import { useApp } from '../state/AppContext'
 import { formatDuration } from '../lib/format'
@@ -27,7 +28,7 @@ export function TitleBar(): JSX.Element {
     <header className="titlebar">
       <div className="titlebar__brand">
         <span className="titlebar__mark">
-          <Icon name="bolt" size={14} />
+          <LogoMark size={22} />
         </span>
         <span className="titlebar__name">
           Replay<span className="titlebar__tld">.gg</span>

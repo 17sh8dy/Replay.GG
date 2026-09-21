@@ -7,6 +7,8 @@ directories:
 files:
   - out/**/*
   - package.json
+  # Tray icon is read at runtime from the packaged app.
+  - assets/logo/png/replay-gg-icon-*.png
 
 # Ships a bundled ffmpeg when one is dropped here; the app falls back to PATH.
 extraResources:
@@ -16,6 +18,7 @@ extraResources:
       - '**/*'
 
 win:
+  icon: assets/logo/png/replay-gg.ico
   target:
     - nsis
   artifactName: ${productName}-${version}-setup.${ext}

@@ -1,4 +1,5 @@
 import { app, BrowserWindow, protocol, net, shell, Tray, Menu, nativeImage } from 'electron'
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { registerIpcHandlers } from './ipc'
@@ -28,6 +29,12 @@ function registerMediaProtocol(): void {
   })
 }
 
+/** A brand PNG from assets/logo, or undefined when it isn't there (falls back to defaults). */
+function logoPath(size: 16 | 32 | 48 | 64 | 128 | 256): string | undefined {
+  const file = join(app.getAppPath(), 'assets', 'logo', 'png', `replay-gg-icon-${size}.png`)
+  return existsSync(file) ? file : undefined
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1440,
@@ -35,7 +42,8 @@ function createWindow(): void {
     minWidth: 1024,
     minHeight: 680,
     show: false,
-    backgroundColor: '#0B0C0E',
+    backgroundColor: '#080808',
+    icon: logoPath(256),
     // Custom chrome — the title bar is drawn in the renderer.
     frame: false,
     titleBarStyle: 'hidden',
@@ -97,6 +105,11 @@ function showWindow(): void {
  * start hidden at login: the tray icon is the way back in.)
  */
 function trayIcon(): Electron.NativeImage {
+  const branded = logoPath(32)
+  if (branded) {
+    const image = nativeImage.createFromPath(branded)
+    if (!image.isEmpty()) return image.resize({ width: 16, height: 16, quality: 'best' })
+  }
   const size = 16
   const buf = Buffer.alloc(size * size * 4)
   const c = (size - 1) / 2
