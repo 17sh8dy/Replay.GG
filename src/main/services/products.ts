@@ -42,13 +42,13 @@ const TARGETS: Record<string, Target> = {
   'nova-help': {
     kind: 'site',
     label: 'Nova.Help',
-    url: 'https://nova-help.17sh8dy.workers.dev/'
+    url: 'https://nova-help.shadylabs.workers.dev/'
   },
   nova: { kind: 'site', label: 'Nova', url: 'https://nova-780.pages.dev/' },
   'atlas-site': {
     kind: 'site',
     label: 'Atlas Website',
-    url: 'https://atlas-website.17sh8dy.workers.dev/'
+    url: 'https://atlas-website.shadylabs.workers.dev/'
   },
   // Nova Cut is listed as "Soon" in the switcher until it is ready. To turn it on, set its kind to
   // 'app' there and add: 'nova-cut': { kind: 'app', label: 'Nova Cut', names: ['Nova Cut', 'NovaCut'], getUrl: 'https://nova-780.pages.dev/' }  (the Nova home page, until it has its own)
@@ -56,7 +56,7 @@ const TARGETS: Record<string, Target> = {
     kind: 'app',
     label: 'Atlas',
     names: ['Atlas'],
-    getUrl: 'https://atlas-website.17sh8dy.workers.dev/'
+    getUrl: 'https://atlas-website.shadylabs.workers.dev/'
   }
 }
 

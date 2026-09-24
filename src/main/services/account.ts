@@ -36,7 +36,7 @@ import { fileStorage } from '@nova/account-client/storage/node'
 import type { AccountState } from '@shared/types'
 
 /** Overridable for a local Nova.Help; the only place the address appears. */
-const ORIGIN = process.env.NOVA_ACCOUNTS_ORIGIN ?? 'https://nova-help.17sh8dy.workers.dev'
+const ORIGIN = process.env.NOVA_ACCOUNTS_ORIGIN ?? 'https://nova-help.shadylabs.workers.dev'
 
 /** The Nova site. Viewing is fine anywhere; editing an account happens only at NOVA_ACCOUNT_URL. */
 export const NOVA_URL = 'https://nova-780.pages.dev'
