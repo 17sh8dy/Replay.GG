@@ -50,6 +50,11 @@ const TARGETS: Record<string, Target> = {
     label: 'Atlas Website',
     url: 'https://atlas-website.shadylabs.workers.dev/'
   },
+  'nova-legal': {
+    kind: 'site',
+    label: 'Nova Legal',
+    url: 'https://nova-legal.shadylabs.workers.dev/'
+  },
   // Nova Cut is listed as "Soon" in the switcher until it is ready. To turn it on, set its kind to
   // 'app' there and add: 'nova-cut': { kind: 'app', label: 'Nova Cut', names: ['Nova Cut', 'NovaCut'], getUrl: 'https://nova-780.pages.dev/' }  (the Nova home page, until it has its own)
   atlas: {
