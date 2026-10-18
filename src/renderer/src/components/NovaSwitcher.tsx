@@ -55,6 +55,7 @@ const SITES: NovaProduct[] = [
   { id: 'atlas-site', label: 'Atlas Website', tagline: 'Download and learn about Atlas', icon: 'star', kind: 'site' },
   { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'site' },
   { id: 'nova-legal', label: 'Nova Legal', tagline: 'Terms and privacy', icon: 'library', kind: 'site' },
+  { id: 'nova-review', label: 'Nova.Review', tagline: 'Reviews and suggestions', icon: 'star', kind: 'site' },
   { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut, on the web', icon: 'scissors', kind: 'soon' }
 ]
 
