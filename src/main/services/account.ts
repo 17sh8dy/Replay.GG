@@ -41,6 +41,8 @@ const ORIGIN = process.env.NOVA_ACCOUNTS_ORIGIN ?? 'https://nova-help.shadylabs.
 /** The Nova site. Viewing is fine anywhere; editing an account happens only at NOVA_ACCOUNT_URL. */
 export const NOVA_URL = 'https://nova-780.pages.dev'
 export const NOVA_ACCOUNT_URL = `${NOVA_URL}/account`
+/** Nova.Review's page for Replay.gg, where people rate and review it. */
+export const NOVA_REVIEW_URL = 'https://nova-review.shadylabs.workers.dev/p/replay-gg'
 
 /** Replay.gg's section of the support portal. Real today. */
 export const NOVA_HELP_URL = `${ORIGIN}/help/replay-gg`
@@ -155,8 +157,13 @@ export async function signOutAccount(): Promise<AccountState> {
 }
 
 /** Open one of the fixed Nova sites in the browser. A whitelist, never a renderer-supplied URL. */
-export function openSite(target: 'help' | 'nova' | 'account'): void {
-  const url = { help: `${ORIGIN}/`, nova: NOVA_URL, account: NOVA_ACCOUNT_URL }[target]
+export function openSite(target: 'help' | 'nova' | 'account' | 'review'): void {
+  const url = {
+    help: `${ORIGIN}/`,
+    nova: NOVA_URL,
+    account: NOVA_ACCOUNT_URL,
+    review: NOVA_REVIEW_URL
+  }[target]
   if (url) void shell.openExternal(url)
 }
 

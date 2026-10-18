@@ -71,7 +71,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.accountSignOut, () => signOutAccount())
   ipcMain.handle(IPC.accountOpenHelp, () => openHelp())
   ipcMain.handle(IPC.accountReopenSignIn, () => reopenSignIn())
-  ipcMain.handle(IPC.accountOpenSite, (_e, target: 'help' | 'nova' | 'account') => openSite(target))
+  ipcMain.handle(IPC.accountOpenSite, (_e, target: 'help' | 'nova' | 'account' | 'review') => openSite(target))
 
   // --- Settings ------------------------------------------------------------
   ipcMain.handle(IPC.clipNotificationPreview, () => previewClipNotification())

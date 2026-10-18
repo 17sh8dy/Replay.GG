@@ -109,7 +109,7 @@ const api = {
     signOut: (): Promise<AccountState> => ipcRenderer.invoke(IPC.accountSignOut),
     openHelp: (): Promise<void> => ipcRenderer.invoke(IPC.accountOpenHelp),
     reopenSignIn: (): Promise<void> => ipcRenderer.invoke(IPC.accountReopenSignIn),
-    openSite: (target: 'help' | 'nova' | 'account'): Promise<void> =>
+    openSite: (target: 'help' | 'nova' | 'account' | 'review'): Promise<void> =>
       ipcRenderer.invoke(IPC.accountOpenSite, target)
   },
 

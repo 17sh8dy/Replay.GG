@@ -161,7 +161,7 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
                   ? formatDuration(recording.elapsed)
                   : currentGame
                     ? currentGame
-                    : 'Record any PC game'}
+                    : 'Record Anything'}
               </h1>
 
               <p className="hero__sub">

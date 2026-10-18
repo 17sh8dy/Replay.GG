@@ -697,6 +697,14 @@ function AccountSection({
           </Button>
         </Row>
         <Row
+          label="Want to leave a review/rate this Application?"
+          hint="Tell people (and us) what you think of Replay.gg. You can post without an account."
+        >
+          <Button onClick={() => void window.replay.account.openSite('review')}>
+            <Icon name="external" size={15} /> Leave a review
+          </Button>
+        </Row>
+        <Row
           label="Edit your account"
           hint="Viewing is open to you everywhere. To make changes, use the Nova account page."
         >

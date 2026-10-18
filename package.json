@@ -1,6 +1,6 @@
 {
   "name": "replay-gg",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Record gameplay and create clips from any PC game.",
   "main": "./out/main/index.js",
   "author": "Replay.gg",
