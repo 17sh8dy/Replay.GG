@@ -8,7 +8,9 @@ Electron + React + TypeScript, built with electron-vite.
 
 ## Requirements
 
-**ffmpeg is required.** The app runs without it, but recording and clipping are
+**ffmpeg is required, and the Windows installer bundles it** (FFmpeg 9.0.2 essentials, GPL v3,
+unmodified, from gyan.dev). For source builds, `npm run dist` fetches it into `resources/ffmpeg`
+via `scripts/fetch-ffmpeg.mjs` (gitignored, ~210 MB). Without it recording and clipping are
 disabled and the Home screen shows a setup prompt. Resolution order:
 
 1. `REPLAYGG_FFMPEG_DIR` environment variable
