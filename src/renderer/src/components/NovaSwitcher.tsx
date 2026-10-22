@@ -56,7 +56,7 @@ const SITES: NovaProduct[] = [
   { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'site' },
   { id: 'nova-legal', label: 'Nova Legal', tagline: 'Terms and privacy', icon: 'library', kind: 'site' },
   { id: 'nova-review', label: 'Nova.Review', tagline: 'Reviews and suggestions', icon: 'star', kind: 'site' },
-  { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut, on the web', icon: 'scissors', kind: 'soon' }
+  { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut download site', icon: 'scissors', kind: 'soon' }
 ]
 
 /** The Nova sparkle mark — identical to assets/favicon.svg in the Nova repo. */
