@@ -6,7 +6,7 @@ import { registerIpcHandlers } from './ipc'
 import { ensureStorageDirs, getSettings } from './services/settings'
 import { registerHotkeys, unregisterHotkeys } from './services/hotkeys'
 import { rescan } from './services/library'
-import { shutdownRecorder, toggleRecording } from './services/recorder'
+import { recoverOrphanedRecordings, shutdownRecorder, toggleRecording, togglePause } from './services/recorder'
 import { enableReplayBuffer, saveReplay, shutdownReplayBuffer } from './services/replayBuffer'
 import { launchedAtLogin, syncLaunchOnStartup } from './services/startup'
 import { initUpdater } from './services/updater'
@@ -143,6 +143,7 @@ function createTray(): void {
       { label: 'Open Replay.gg', click: showWindow },
       { type: 'separator' },
       { label: 'Start / Stop Recording', click: () => void toggleRecording() },
+      { label: 'Pause / Resume Recording', click: () => void togglePause() },
       { label: 'Save Instant Replay', click: () => void saveReplay() },
       { type: 'separator' },
       {
@@ -183,7 +184,8 @@ if (!gotLock) {
 
     // Index whatever is already on disk, then start the buffer if the user
     // left it enabled last session.
-    void rescan()
+    // Salvage any recording an earlier crash left half-finished, then index.
+    void recoverOrphanedRecordings().finally(() => void rescan())
     if (getSettings().replayBuffer.enabled) {
       void enableReplayBuffer()
     }

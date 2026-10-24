@@ -25,6 +25,8 @@ const api = {
   recording: {
     start: (): Promise<RecordingStatus> => ipcRenderer.invoke(IPC.recordingStart),
     stop: (): Promise<RecordingStatus> => ipcRenderer.invoke(IPC.recordingStop),
+    pause: (): Promise<RecordingStatus> => ipcRenderer.invoke(IPC.recordingPause),
+    resume: (): Promise<RecordingStatus> => ipcRenderer.invoke(IPC.recordingResume),
     status: (): Promise<RecordingStatus> => ipcRenderer.invoke(IPC.recordingStatus)
   },
 

@@ -8,6 +8,8 @@ export const IPC = {
   // Recording
   recordingStart: 'recording:start',
   recordingStop: 'recording:stop',
+  recordingPause: 'recording:pause',
+  recordingResume: 'recording:resume',
   recordingStatus: 'recording:get-status',
 
   // Replay buffer

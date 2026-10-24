@@ -371,6 +371,14 @@ export function Settings(): JSX.Element {
                   }
                 />
               </Row>
+              <Row label="Pause / resume recording">
+                <HotkeyInput
+                  value={settings.hotkeys.pauseRecording.accelerator}
+                  onChange={(accelerator) =>
+                    void updateSettings({ hotkeys: { pauseRecording: { accelerator } } })
+                  }
+                />
+              </Row>
               <Row label="Save instant replay">
                 <HotkeyInput
                   value={settings.hotkeys.saveReplay.accelerator}

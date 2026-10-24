@@ -1,6 +1,6 @@
 import { globalShortcut } from 'electron'
 import { getSettings } from './settings'
-import { toggleRecording } from './recorder'
+import { toggleRecording, togglePause } from './recorder'
 import { saveReplay, toggleReplayBuffer } from './replayBuffer'
 import { toast } from './events'
 
@@ -19,6 +19,11 @@ export function registerHotkeys(): void {
       accelerator: hotkeys.toggleRecording.accelerator,
       label: 'Start/stop recording',
       action: () => void toggleRecording()
+    },
+    {
+      accelerator: hotkeys.pauseRecording.accelerator,
+      label: 'Pause/resume recording',
+      action: () => void togglePause()
     },
     {
       accelerator: hotkeys.saveReplay.accelerator,

@@ -8,7 +8,13 @@ import { applyLaunchOnStartup } from './services/startup'
 import { openProduct } from './services/products'
 import { previewClipNotification } from './services/clipNotification'
 import { checkForUpdates, downloadUpdate, getUpdateStatus, installUpdate } from './services/updater'
-import { getRecordingStatus, startRecording, stopRecording } from './services/recorder'
+import {
+  getRecordingStatus,
+  pauseRecording,
+  resumeRecording,
+  startRecording,
+  stopRecording
+} from './services/recorder'
 import {
   disableReplayBuffer,
   enableReplayBuffer,
@@ -38,6 +44,8 @@ export function registerIpcHandlers(): void {
   // --- Recording -----------------------------------------------------------
   ipcMain.handle(IPC.recordingStart, () => startRecording())
   ipcMain.handle(IPC.recordingStop, () => stopRecording())
+  ipcMain.handle(IPC.recordingPause, () => pauseRecording())
+  ipcMain.handle(IPC.recordingResume, () => resumeRecording())
   ipcMain.handle(IPC.recordingStatus, () => getRecordingStatus())
 
   // --- Replay buffer -------------------------------------------------------

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { bitrateFor, outputHeight } from '@shared/captureProfile'
 import type { EncoderInfo, DisplayInfo, MediaItem } from '@shared/types'
 import { Icon, type IconName } from '../components/Icon'
 import { Button, EmptyState } from '../components/ui'
@@ -22,6 +23,8 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
     capabilities,
     libraryVersion,
     toggleRecording,
+    togglePause,
+    updateSettings,
     toggleReplayBuffer,
     saveReplay
   } = useApp()
@@ -66,7 +69,9 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
     }
   }, [])
 
-  const isRecording = recording.state === 'recording'
+  const isPaused = recording.state === 'paused'
+  // A paused session is still a live session: it has a Stop button and a running total.
+  const isRecording = recording.state === 'recording' || isPaused
   const busy = recording.state === 'starting' || recording.state === 'stopping'
   const ffmpegMissing = capabilities !== null && !capabilities.ffmpegAvailable
   const canCapture = capabilities === null || capabilities.ffmpegAvailable
@@ -95,9 +100,16 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
     )
   }, [capabilities, settings])
 
-  const micOn = settings?.audio.microphoneEnabled ?? false
-  const resLabel = display ? `${display.height}p` : settings ? settings.capture.resolution : '—'
+  // A mic can only be toggled here once one has been picked in Settings; otherwise there is
+  // nothing for the button to switch on.
+  const micAvailable = Boolean(settings?.audio.microphoneDeviceId)
+  const micOn = micAvailable && (settings?.audio.microphoneEnabled ?? false)
+  // The numbers ffmpeg is actually given: the preset (not the monitor) decides output height,
+  // fps is already capped to what screen capture can deliver, and quality maps to a bitrate.
+  const outHeight = settings ? outputHeight(settings.capture, display?.height ?? null) : null
+  const resLabel = outHeight ? `${outHeight}p` : '—'
   const fps = settings?.capture.fps ?? 60
+  const mbps = settings ? bitrateFor(settings.capture) : null
 
   // --- Storytelling numbers -----------------------------------------------
   const totalCaptureTime = useMemo(
@@ -124,7 +136,7 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
   const readiness: { tone: 'ok' | 'live' | 'danger'; label: string } = ffmpegMissing
     ? { tone: 'danger', label: 'Encoder unavailable' }
     : isRecording
-      ? { tone: 'live', label: 'Recording now' }
+      ? { tone: 'live', label: isPaused ? 'Paused' : 'Recording now' }
       : { tone: 'ok', label: 'Ready to capture' }
 
   return (
@@ -165,7 +177,9 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
               </h1>
 
               <p className="hero__sub">
-                {isRecording
+                {isPaused
+                  ? 'Recording is paused — resume to keep going, or stop to save it.'
+                  : isRecording
                   ? recording.game
                     ? `Capturing ${recording.game} in ${resLabel} · ${fps} FPS`
                     : `Capturing your display in ${resLabel} · ${fps} FPS`
@@ -177,19 +191,19 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
               {/* Live status rail — readiness, encoder, resolution, game, mic */}
               <div className="hero__rail">
                 <StatusChip tone={readiness.tone} dot>
-                  {ffmpegMissing ? 'Not ready' : isRecording ? 'Live' : 'Ready'}
+                  {ffmpegMissing ? 'Not ready' : isPaused ? 'Paused' : isRecording ? 'Live' : 'Ready'}
                 </StatusChip>
                 <StatusChip icon="bolt" tone={encoder ? 'accent' : 'default'}>
                   {encoder ? encoder.label : 'No encoder'}
                 </StatusChip>
                 <StatusChip icon="monitor">
-                  {resLabel} · {fps} FPS
+                  {resLabel} · {fps} FPS{mbps ? ` · ${mbps} Mbps` : ''}
                 </StatusChip>
                 <StatusChip icon="gamepad" tone={currentGame ? 'accent' : 'default'}>
                   {currentGame ?? 'No game detected'}
                 </StatusChip>
                 <StatusChip icon="mic" tone={micOn ? 'accent' : 'muted'}>
-                  {micOn ? 'Mic on' : 'Mic off'}
+                  {!micAvailable ? 'No mic set' : micOn ? 'Mic on' : 'Mic off'}
                 </StatusChip>
               </div>
             </div>
@@ -208,6 +222,39 @@ export function Home({ onNavigate }: HomeProps): JSX.Element {
                   {busy ? '…' : isRecording ? 'Stop' : 'Record'}
                 </span>
               </button>
+
+              <div className="hero__buttons">
+              {micAvailable && (
+                <button
+                  className={`pause-btn mic-btn${micOn ? '' : ' mic-btn--off'}`}
+                  onClick={() => void updateSettings({ audio: { microphoneEnabled: !micOn } })}
+                  disabled={busy || recording.state === 'recording'}
+                  aria-pressed={micOn}
+                  aria-label={micOn ? 'Turn microphone off' : 'Turn microphone on'}
+                  title={
+                    recording.state === 'recording'
+                      ? 'Pause the recording to change the microphone'
+                      : micOn
+                        ? 'Microphone on — click to mute'
+                        : 'Microphone off — click to enable'
+                  }
+                >
+                  <Icon name="mic" size={16} />
+                  {micOn ? 'Mic on' : 'Mic off'}
+                </button>
+              )}
+              {isRecording && (
+                <button
+                  className="pause-btn"
+                  onClick={() => void togglePause()}
+                  disabled={busy}
+                  aria-label={isPaused ? 'Resume recording' : 'Pause recording'}
+                >
+                  <Icon name={isPaused ? 'record' : 'pause'} size={16} />
+                  {isPaused ? 'Resume' : 'Pause'}
+                </button>
+              )}
+              </div>
 
               {settings && (
                 <div className="record-orb__hotkey">

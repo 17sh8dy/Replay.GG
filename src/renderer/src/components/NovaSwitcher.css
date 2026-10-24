@@ -235,3 +235,7 @@ button.nova-switcher__item:hover {
 .nova-switcher__viewall:hover svg {
   transform: translateX(2px);
 }
+
+.nova-switcher__eyebrow--sub {
+  margin-top: 10px;
+}

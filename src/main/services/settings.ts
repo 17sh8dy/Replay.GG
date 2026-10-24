@@ -44,6 +44,7 @@ function defaultSettings(): Settings {
     },
     hotkeys: {
       toggleRecording: { accelerator: 'Ctrl+Alt+R' },
+      pauseRecording: { accelerator: 'Ctrl+Alt+Space' },
       saveReplay: { accelerator: 'Ctrl+Alt+S' },
       toggleReplayBuffer: { accelerator: 'Ctrl+Alt+B' },
       screenshot: { accelerator: 'Ctrl+Alt+P' }

@@ -38,7 +38,7 @@ interface NovaProduct {
 }
 
 const PRODUCTS: NovaProduct[] = [
-  { id: 'nova-cut', label: 'Nova Cut', tagline: 'Create and edit', icon: 'scissors', kind: 'soon' },
+  { id: 'nova-cut', label: 'Nova Cut', tagline: 'Create and edit', icon: 'scissors', kind: 'app' },
   { id: 'replay-gg', label: 'Replay.GG', tagline: 'Record and clip gameplay', icon: 'bolt', kind: 'app' },
   { id: 'atlas', label: 'Atlas', tagline: 'Your desktop assistant', icon: 'star', kind: 'app' },
   { id: 'nova-games', label: 'Nova Games', tagline: 'Coming soon', icon: 'gamepad', kind: 'soon' }
@@ -58,6 +58,9 @@ const SITES: NovaProduct[] = [
   { id: 'nova-review', label: 'Nova.Review', tagline: 'Reviews and suggestions', icon: 'star', kind: 'site' },
   { id: 'nova-cut-site', label: 'Nova Cut Website', tagline: 'Nova Cut download site', icon: 'scissors', kind: 'site' }
 ]
+
+/** The two websites worth a quick jump (the rest live under View all). */
+const QUICK_SITES: NovaProduct[] = SITES.filter((s) => s.id === 'nova-cut-site' || s.id === 'nova-review')
 
 /** The Nova sparkle mark — identical to assets/favicon.svg in the Nova repo. */
 function NovaMark(): JSX.Element {
@@ -97,25 +100,7 @@ export function NovaSwitcher({ current }: { current: string }): JSX.Element {
     }
   }, [open])
 
-  return (
-    <div className="nova-switcher" ref={rootRef}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="nova-switcher__trigger"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className="nova-switcher__mark">
-          <NovaMark />
-        </span>
-        <span className="nova-switcher__trigger-label">Product Switcher</span>
-        <Icon name="chevronDown" size={12} className="nova-switcher__chevron" />
-      </button>
-      <div className="nova-switcher__menu" role="menu" data-open={open}>
-        <p className="nova-switcher__eyebrow">Nova</p>
-        {PRODUCTS.map((p) => {
+  const renderRow = (p: NovaProduct): JSX.Element => {
           const isCurrent = p.id === current
           const body = (
             <>
@@ -169,7 +154,29 @@ export function NovaSwitcher({ current }: { current: string }): JSX.Element {
               {p.kind === 'site' && <Icon name="external" size={13} className="nova-switcher__kind" />}
             </button>
           )
-        })}
+        }
+
+  return (
+    <div className="nova-switcher" ref={rootRef}>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="nova-switcher__trigger"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="nova-switcher__mark">
+          <NovaMark />
+        </span>
+        <span className="nova-switcher__trigger-label">Product Switcher</span>
+        <Icon name="chevronDown" size={12} className="nova-switcher__chevron" />
+      </button>
+      <div className="nova-switcher__menu" role="menu" data-open={open}>
+        <p className="nova-switcher__eyebrow">Nova</p>
+        {PRODUCTS.map(renderRow)}
+        <p className="nova-switcher__eyebrow nova-switcher__eyebrow--sub">Websites</p>
+        {QUICK_SITES.map(renderRow)}
         <button
           type="button"
           className="nova-switcher__viewall"

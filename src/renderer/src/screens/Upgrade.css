@@ -146,3 +146,50 @@
   font-size: 12px;
   color: var(--text-tertiary);
 }
+
+/* Same width as the plan grid above so the edges line up. */
+.upgrade__request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 900px;
+  margin-top: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg, 14px);
+  background: var(--bg-elevated);
+}
+
+.upgrade__request-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.upgrade__request-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.upgrade__discord {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #5865f2;
+  color: #fff;
+  transition: filter 0.15s;
+}
+
+.upgrade__discord:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 1100px) {
+  .upgrade__request {
+    max-width: 460px;
+  }
+}

@@ -117,7 +117,7 @@ export async function downloadUpdate(): Promise<UpdateStatus> {
 export function installUpdate(): { ok: boolean; reason?: 'recording' | 'not-ready' } {
   if (status.state !== 'ready') return { ok: false, reason: 'not-ready' }
   const rec = getRecordingStatus().state
-  if (rec === 'recording' || rec === 'starting' || rec === 'stopping') {
+  if (rec !== 'idle') {
     return { ok: false, reason: 'recording' }
   }
   // Silent (no wizard) and relaunch afterwards; the install folder is reused.

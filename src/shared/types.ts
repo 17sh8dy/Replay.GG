@@ -134,6 +134,7 @@ export interface Settings {
   }
   hotkeys: {
     toggleRecording: Hotkey
+    pauseRecording: Hotkey
     saveReplay: Hotkey
     toggleReplayBuffer: Hotkey
     screenshot: Hotkey

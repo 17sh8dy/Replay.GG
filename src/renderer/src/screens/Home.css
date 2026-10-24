@@ -749,3 +749,37 @@ kbd {
 .row__empty .empty {
   padding: 44px 24px;
 }
+
+.pause-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pause-btn:hover:not(:disabled) {
+  border-color: var(--text-secondary);
+}
+
+.pause-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.hero__buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mic-btn--off {
+  color: var(--text-secondary);
+}

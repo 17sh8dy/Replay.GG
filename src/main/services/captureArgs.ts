@@ -1,4 +1,5 @@
-import type { DisplayInfo, QualityPreset, ResolutionPreset, Settings } from '@shared/types'
+import type { DisplayInfo, Settings } from '@shared/types'
+import { bitrateFor, RESOLUTION_HEIGHT } from '@shared/captureProfile'
 import { pickEncoder } from './ffmpeg'
 import { getDisplays } from './storage'
 
@@ -8,20 +9,6 @@ import { getDisplays } from './storage'
  * Kept separate from the recorder so the recorder and the replay buffer
  * produce byte-identical capture pipelines and only differ in their muxer.
  */
-
-const QUALITY_BITRATE: Record<Exclude<QualityPreset, 'custom'>, number> = {
-  low: 8,
-  medium: 16,
-  high: 30,
-  ultra: 60
-}
-
-const RESOLUTION_HEIGHT: Record<Exclude<ResolutionPreset, 'native'>, number> = {
-  '2160p': 2160,
-  '1440p': 1440,
-  '1080p': 1080,
-  '720p': 720
-}
 
 /**
  * The display to capture: the configured one, else the primary. Returns null
@@ -37,11 +24,6 @@ function selectedDisplay(settings: Settings): DisplayInfo | null {
     : undefined
 
   return chosen ?? displays.find((d) => d.isPrimary) ?? displays[0]
-}
-
-export function bitrateFor(capture: Settings['capture']): number {
-  if (capture.quality === 'custom') return Math.max(1, capture.bitrate)
-  return QUALITY_BITRATE[capture.quality]
 }
 
 /**

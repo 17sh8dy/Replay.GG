@@ -47,6 +47,7 @@ interface AppState {
   refreshStorage: () => Promise<void>
   refreshCapabilities: () => Promise<void>
   toggleRecording: () => Promise<void>
+  togglePause: () => Promise<void>
   toggleReplayBuffer: () => Promise<void>
   saveReplay: () => Promise<void>
   pushToast: (level: Toast['level'], message: string) => void
@@ -178,6 +179,11 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
     }
   }, [recording.state])
 
+  const togglePause = useCallback(async () => {
+    if (recording.state === 'paused') setRecording(await window.replay.recording.resume())
+    else if (recording.state === 'recording') setRecording(await window.replay.recording.pause())
+  }, [recording.state])
+
   const toggleReplayBuffer = useCallback(async () => {
     if (replay.enabled) {
       setReplay(await window.replay.replay.disable())
@@ -209,6 +215,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       refreshStorage,
       refreshCapabilities,
       toggleRecording,
+      togglePause,
       toggleReplayBuffer,
       saveReplay,
       pushToast,
@@ -229,6 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
       refreshStorage,
       refreshCapabilities,
       toggleRecording,
+      togglePause,
       toggleReplayBuffer,
       saveReplay,
       pushToast,
