@@ -1,6 +1,7 @@
 import type { DisplayInfo, Settings } from '@shared/types'
 import { bitrateFor, RESOLUTION_HEIGHT } from '@shared/captureProfile'
 import { pickEncoder } from './ffmpeg'
+import { isLoopbackId } from './loopback'
 import { getDisplays } from './storage'
 
 /**
@@ -68,13 +69,26 @@ function videoInput(settings: Settings): string[] {
   return ['-f', 'x11grab', '-framerate', String(fps), '-i', process.env.DISPLAY ?? ':0.0']
 }
 
-/** DirectShow audio inputs, one `-i` per enabled source. */
-function audioInputs(settings: Settings): string[] {
+/**
+ * How system audio is captured: a WASAPI loopback of a playback device (no device chosen means
+ * the default speakers), or a DirectShow device such as "Stereo Mix". Null when it is off.
+ */
+export function systemAudioSource(settings: Settings): 'loopback' | 'dshow' | null {
+  const { audio } = settings
+  if (process.platform !== 'win32' || !audio.systemAudioEnabled) return null
+  return isLoopbackId(audio.systemAudioDeviceId) ? 'loopback' : 'dshow'
+}
+
+/** Audio inputs, one `-i` per enabled source. System audio is always the first. */
+function audioInputs(settings: Settings, loopbackPipe?: string): string[] {
   if (process.platform !== 'win32') return []
   const args: string[] = []
   const { audio } = settings
 
-  if (audio.systemAudioEnabled && audio.systemAudioDeviceId) {
+  const system = systemAudioSource(settings)
+  if (system === 'loopback' && loopbackPipe) {
+    args.push('-thread_queue_size', '1024', '-f', 's16le', '-ar', '48000', '-ac', '2', '-i', `\\\\.\\pipe\\${loopbackPipe}`)
+  } else if (system === 'dshow') {
     args.push('-f', 'dshow', '-i', `audio=${audio.systemAudioDeviceId}`)
   }
   if (audio.microphoneEnabled && audio.microphoneDeviceId) {
@@ -84,11 +98,12 @@ function audioInputs(settings: Settings): string[] {
 }
 
 /** Count of audio inputs actually added, used to build the mix filter. */
-function audioInputCount(settings: Settings): number {
+function audioInputCount(settings: Settings, loopbackPipe?: string): number {
   if (process.platform !== 'win32') return 0
   const { audio } = settings
   let n = 0
-  if (audio.systemAudioEnabled && audio.systemAudioDeviceId) n++
+  const system = systemAudioSource(settings)
+  if (system === 'dshow' || (system === 'loopback' && loopbackPipe)) n++
   if (audio.microphoneEnabled && audio.microphoneDeviceId) n++
   return n
 }
@@ -167,6 +182,8 @@ export interface CaptureArgsOptions {
   /** Extra args placed immediately before the output path (muxer options). */
   outputArgs: string[]
   output: string
+  /** Named pipe the loopback helper serves system audio on (see loopback.ts). */
+  loopbackPipe?: string
 }
 
 /**
@@ -176,11 +193,11 @@ export interface CaptureArgsOptions {
  */
 export async function buildCaptureArgs(
   settings: Settings,
-  { outputArgs, output }: CaptureArgsOptions
+  { outputArgs, output, loopbackPipe }: CaptureArgsOptions
 ): Promise<string[]> {
   const ffEncoder = await pickEncoder(settings.capture.encoder)
   const mbps = bitrateFor(settings.capture)
-  const nAudio = audioInputCount(settings)
+  const nAudio = audioInputCount(settings, loopbackPipe)
   const webcamOn = webcamActive(settings)
   // The webcam claims input index 1 (right after the desktop capture), so
   // every audio input shifts up by one once it's present.
@@ -193,7 +210,7 @@ export async function buildCaptureArgs(
     '-y',
     ...videoInput(settings),
     ...webcamInput(settings),
-    ...audioInputs(settings)
+    ...audioInputs(settings, loopbackPipe)
   ]
 
   const scale = scaleFilter(settings)

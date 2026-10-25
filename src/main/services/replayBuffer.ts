@@ -6,7 +6,8 @@ import { promisify } from 'node:util'
 import { app } from 'electron'
 import type { ReplayBufferStatus } from '@shared/types'
 import { requireFfmpeg } from './ffmpeg'
-import { buildCaptureArgs } from './captureArgs'
+import { buildCaptureArgs, systemAudioSource } from './captureArgs'
+import { startLoopback } from './loopback'
 import { getSettings } from './settings'
 import { detectActiveGame } from './games'
 import { addFromFile } from './library'
@@ -114,7 +115,12 @@ export async function enableReplayBuffer(): Promise<ReplayBufferStatus> {
     rmSync(dir, { recursive: true, force: true })
     mkdirSync(dir, { recursive: true })
 
+    const feed =
+      systemAudioSource(settings) === 'loopback'
+        ? await startLoopback(settings.audio.systemAudioDeviceId)
+        : null
     const args = await buildCaptureArgs(settings, {
+      loopbackPipe: feed?.pipe,
       outputArgs: [
         /* Force a keyframe at every segment boundary. Relying on -g alone let some encoders
            (AMD AMF here) go a minute or more between keyframes, so the first segment never
@@ -130,6 +136,7 @@ export async function enableReplayBuffer(): Promise<ReplayBufferStatus> {
     })
 
     child = spawn(bin, args, { windowsHide: true, stdio: ['pipe', 'ignore', 'pipe'] })
+    child.once('close', () => feed?.stop())
 
     let stderr = ''
     child.stderr?.on('data', (c: Buffer) => {

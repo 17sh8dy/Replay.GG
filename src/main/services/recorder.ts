@@ -4,7 +4,8 @@ import { basename, dirname, join } from 'node:path'
 import { promisify } from 'node:util'
 import type { RecordingStatus } from '@shared/types'
 import { requireFfmpeg } from './ffmpeg'
-import { buildCaptureArgs } from './captureArgs'
+import { buildCaptureArgs, systemAudioSource } from './captureArgs'
+import { startLoopback } from './loopback'
 import { getSettings } from './settings'
 import { detectActiveGame } from './games'
 import { addFromFile } from './library'
@@ -135,9 +136,19 @@ async function startPart(): Promise<void> {
   if (!s) return
   const bin = await requireFfmpeg()
   const part = join(s.partsDir, `part${String(s.parts.length + 1).padStart(3, '0')}.mp4`)
-  const args = await buildCaptureArgs(getSettings(), { outputArgs: FRAGMENTED, output: part })
+  const settings = getSettings()
+  const feed =
+    systemAudioSource(settings) === 'loopback'
+      ? await startLoopback(settings.audio.systemAudioDeviceId)
+      : null
+  const args = await buildCaptureArgs(settings, {
+    outputArgs: FRAGMENTED,
+    output: part,
+    loopbackPipe: feed?.pipe
+  })
 
   const proc = spawn(bin, args, { windowsHide: true, stdio: ['pipe', 'ignore', 'pipe'] })
+  proc.once('close', () => feed?.stop())
   s.parts.push(part)
   s.ending = null
   s.partStartedAt = Date.now()

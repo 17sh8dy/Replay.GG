@@ -16,6 +16,10 @@ extraResources:
     to: ffmpeg
     filter:
       - '**/*'
+  - from: resources/helpers
+    to: helpers
+    filter:
+      - '**/*'
 
 # Updates: the app reads latest.yml from the newest GitHub release of this repo. Publish a release
 # by uploading the installer and latest.yml (and the .blockmap) that `npm run dist` writes to release/.

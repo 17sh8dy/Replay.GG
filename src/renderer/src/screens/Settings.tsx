@@ -74,9 +74,13 @@ export function Settings(): JSX.Element {
 
   if (!settings) return <div className="screen" />
 
+  const speakerOptions = [
+    { value: '', label: 'Default speakers (follows Windows)' },
+    ...devices.filter((d) => d.output).map((d) => ({ value: d.id, label: d.label }))
+  ]
   const deviceOptions = [
     { value: '', label: devices.length ? 'Select a device…' : 'No devices found' },
-    ...devices.map((d) => ({ value: d.id, label: d.label }))
+    ...devices.filter((d) => !d.output).map((d) => ({ value: d.id, label: d.label }))
   ]
   const videoDeviceOptions = [
     { value: '', label: videoDevices.length ? 'Select a camera…' : 'No cameras found' },
@@ -276,7 +280,7 @@ export function Settings(): JSX.Element {
                 </Row>
                 <Row
                   label="Device"
-                  hint="Windows needs a loopback device (for example “Stereo Mix” or a virtual audio cable) to record game sound."
+                  hint="The playback device to record, such as your speakers or headphones. Anything it plays ends up in the recording."
                 >
                   <Select
                     value={settings.audio.systemAudioDeviceId ?? ''}
@@ -285,7 +289,7 @@ export function Settings(): JSX.Element {
                         audio: { systemAudioDeviceId: systemAudioDeviceId || null }
                       })
                     }
-                    options={deviceOptions}
+                    options={speakerOptions}
                   />
                 </Row>
               </Group>
@@ -297,7 +301,7 @@ export function Settings(): JSX.Element {
                     onChange={(microphoneEnabled) => {
                       // Turning it on with no device chosen would record silence, so pick one.
                       const pick =
-                        devices.find((d) => /mic/i.test(d.label)) ?? devices[0]
+                        devices.find((d) => !d.output && /mic/i.test(d.label)) ?? devices.find((d) => !d.output)
                       void updateSettings({
                         audio: {
                           microphoneEnabled,

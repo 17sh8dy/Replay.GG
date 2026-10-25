@@ -61,6 +61,8 @@ export type CaptureMode = 'display' | 'window' | 'game'
 export interface AudioDevice {
   id: string
   label: string
+  /** A Windows playback device (speakers/headphones) captured via loopback, not a microphone. */
+  output?: boolean
 }
 
 export interface VideoDevice {

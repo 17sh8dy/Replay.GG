@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
 import { app } from 'electron'
+import { listLoopbackDevices } from './loopback'
 import type { AudioDevice, EncoderInfo, Encoder, VideoDevice } from '@shared/types'
 
 const exec = promisify(execFile)
@@ -225,7 +226,8 @@ function parseDshowDevices(stderr: string, kind: 'audio' | 'video'): { id: strin
 
 /** Enumerates DirectShow audio inputs. Windows-only; returns [] elsewhere. */
 export async function listAudioDevices(): Promise<AudioDevice[]> {
-  return parseDshowDevices(await probeDshowDevices(), 'audio')
+  const inputs = parseDshowDevices(await probeDshowDevices(), 'audio')
+  return [...(await listLoopbackDevices()), ...inputs]
 }
 
 /** Enumerates DirectShow video inputs (webcams). Windows-only; returns [] elsewhere. */
