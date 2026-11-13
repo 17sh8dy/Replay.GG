@@ -65,6 +65,11 @@ const TARGETS: Record<string, Target> = {
     label: 'Nova Cut Website',
     url: 'https://nova-cut-site.shadylabs.workers.dev/'
   },
+  'vexa-site': {
+    kind: 'site',
+    label: 'Vexa Website',
+    url: 'https://vexa.shadylabs.workers.dev/'
+  },
   'nova-cut': {
     kind: 'app',
     label: 'Nova Cut',
@@ -76,12 +81,20 @@ const TARGETS: Record<string, Target> = {
     label: 'Atlas',
     names: ['Atlas'],
     getUrl: 'https://atlas-website.shadylabs.workers.dev/'
+  },
+  vexa: {
+    kind: 'app',
+    label: 'Vexa',
+    names: ['Vexa'],
+    getUrl: 'https://vexa.shadylabs.workers.dev/'
   }
 }
 
 export type OpenProductResult = 'launched' | 'focused' | 'running' | 'browser' | 'unknown'
 
 const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+/** "Vexa 0.5.5" -> "Vexa". Only a trailing version number is removed. */
+const withoutVersion = (s: string): string => s.replace(/\s+v?\d+(?:\.\d+)+\s*$/i, '')
 
 interface Installed {
   name: string
@@ -137,7 +150,8 @@ async function searchHive(key: string, names: string[]): Promise<Installed | nul
     const field = (name: string): string | undefined =>
       new RegExp(`^\\s+${name}\\s+REG_\\w+\\s+(.*)$`, 'mi').exec(block)?.[1]?.trim()
     const displayName = field('DisplayName')
-    if (!displayName || !wanted.includes(norm(displayName))) continue
+    // Installers often add the version ("Vexa 0.5.5", "Replay.gg 0.5.4"): match with or without it.
+    if (!displayName || !(wanted.includes(norm(displayName)) || wanted.includes(norm(withoutVersion(displayName))))) continue
 
     const exe = iconExe(field('DisplayIcon')) ?? exeInFolder(field('InstallLocation') ?? '', names)
     if (exe) return { name: displayName, exe }

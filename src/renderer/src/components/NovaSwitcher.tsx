@@ -41,6 +41,7 @@ const PRODUCTS: NovaProduct[] = [
   { id: 'nova-cut', label: 'Nova Cut', tagline: 'Create and edit', icon: 'scissors', kind: 'app' },
   { id: 'replay-gg', label: 'Replay.GG', tagline: 'Record and clip gameplay', icon: 'bolt', kind: 'app' },
   { id: 'atlas', label: 'Atlas', tagline: 'Your desktop assistant', icon: 'star', kind: 'app' },
+  { id: 'vexa', label: 'Vexa', tagline: 'Browse the web', icon: 'search', kind: 'app' },
   { id: 'nova-games', label: 'Nova Games', tagline: 'Coming soon', icon: 'gamepad', kind: 'soon' }
 ]
 
@@ -53,6 +54,7 @@ const PRODUCTS: NovaProduct[] = [
 const SITES: NovaProduct[] = [
   { id: 'nova-help', label: 'Nova.Help', tagline: 'Support and guides', icon: 'search', kind: 'site' },
   { id: 'atlas-site', label: 'Atlas Website', tagline: 'Download and learn about Atlas', icon: 'star', kind: 'site' },
+  { id: 'vexa-site', label: 'Vexa Website', tagline: 'Download and learn about Vexa', icon: 'search', kind: 'site' },
   { id: 'nova', label: 'Nova', tagline: 'The Nova home page', icon: 'home', kind: 'site' },
   { id: 'nova-legal', label: 'Nova Legal', tagline: 'Terms and privacy', icon: 'library', kind: 'site' },
   { id: 'nova-review', label: 'Nova.Review', tagline: 'Reviews and suggestions', icon: 'star', kind: 'site' },
